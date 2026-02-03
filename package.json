@@ -1,0 +1,11 @@
+{
+  "name": "app-iznajmljivanje-knjiga",
+  "private": true,
+  "scripts": {
+    "dev:server": "cd server && node index.js",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.10"
+  }
+}

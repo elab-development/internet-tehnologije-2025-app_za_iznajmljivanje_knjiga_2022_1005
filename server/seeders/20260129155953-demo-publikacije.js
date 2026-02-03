@@ -1,25 +1,30 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
+    return queryInterface.bulkInsert('Publikacijas', [
+      {
+        naziv: 'Programiranje u JS',
+        isbn: '123-456',
+        autor: 'Brendan Eich',
+        stanje: 5,
+        kategorijaId: 1, // Ovo je za Udžbenike
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        naziv: 'Na Drini ćuprija',
+        isbn: '789-101',
+        autor: 'Ivo Andrić',
+        stanje: 2,
+        kategorijaId: 2, // Ovo je za Beletristiku
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]);
   },
 
   async down (queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    return queryInterface.bulkDelete('Publikacijas', null, {});
   }
 };

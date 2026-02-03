@@ -37,6 +37,19 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
+
+
+db.Kategorija.hasMany(db.Publikacija, { 
+    foreignKey: 'kategorijaId' 
+    
+});
+
+
+db.Publikacija.belongsTo(db.Kategorija, { 
+    foreignKey: 'kategorijaId', 
+    as: 'Kategorija'
+});
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
