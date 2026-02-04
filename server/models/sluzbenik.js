@@ -15,9 +15,9 @@ module.exports = (sequelize, DataTypes) => {
     ime: DataTypes.STRING,
     prezime: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN,
-    aktiviran: { type: DataTypes.BOOLEAN, defaultValue: true }
   }, {
     sequelize,
+    timestamps: false,
     modelName: 'Sluzbenik',
   });
   return Sluzbenik;

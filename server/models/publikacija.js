@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Publikacija',
     tableName: 'publikacijas',
+    timestamps: false,
     freezeTableName: true  
   });
   return Publikacija;

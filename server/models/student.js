@@ -19,11 +19,11 @@ module.exports = (sequelize, DataTypes) => {
     ime: DataTypes.STRING,
     prezime: DataTypes.STRING,
     brojIndeksa: DataTypes.STRING,
-    godinaStudija: DataTypes.INTEGER,
-    aktiviran: { type: DataTypes.BOOLEAN, defaultValue: true }
-  }, {
+  },
+  {
     sequelize,
     modelName: 'Student',
+    timestamps: false
   });
   return Student;
 };

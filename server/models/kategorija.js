@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     naziv: DataTypes.STRING
   }, {
     sequelize,
+    timestamps: false,
     modelName: 'Kategorija',
   });
   return Kategorija;
