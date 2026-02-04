@@ -41,8 +41,9 @@ export default function LoginPage() {
     <div className="max-w-md mx-auto p-8 mt-12">
       <h1 className="text-2xl font-bold text-blue-900 mb-6">Prijava</h1>
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-        <Polje labela="Email" tip="email" vrednost={email} promena={setEmail} placeholder="npr jovan@fon.bg.ac.rs" />
-        <Polje labela="Lozinka" tip="password" vrednost={password} promena={setPassword} />
+        <Polje labela="Email" type
+        ="email" vrednost={email} promena={setEmail} placeholder="npr jovan@fon.bg.ac.rs" />
+        <Polje labela="Lozinka" type="password" vrednost={password} promena={setPassword} />
         {greska && <p className="text-red-600 text-sm mb-4">{greska}</p>}
         <Dugme naslov={ucitava ? "Prijavljujem..." : "Prijavi se"} boja="plava" onemoguceno={ucitava} />
       </form>

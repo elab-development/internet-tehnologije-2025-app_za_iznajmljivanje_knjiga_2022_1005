@@ -5,12 +5,13 @@ const loginRoutes = require('./routes/loginRoutes');
 const korisniciRoutes = require('./routes/korisniciRoutes');
 const auth = require('./middleware/authMiddleware');
 
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-
+app.use('/api/zaduzenja', require('./routes/zaduzenjaRoutes'));
 app.use('/api/publikacije', publikacijaRoutes);
 app.use('/api/login', loginRoutes);
 app.use('/api/korisnici', korisniciRoutes);
@@ -60,7 +61,6 @@ app.post('/api/zaduzi-knjigu', async (req, res) => {
   try {
     const { publikacijaId, brojIndeksa } = req.body;
 
-    
     const student = await db.Student.findOne({ 
       where: { brojIndeksa: brojIndeksa } 
     });
@@ -74,21 +74,24 @@ app.post('/api/zaduzi-knjigu', async (req, res) => {
       return res.status(400).json({ message: "Knjiga trenutno nije na stanju." });
     }
 
-  
+   
+    const danas = new Date();
+    const rok = new Date();
+    rok.setDate(danas.getDate() + 30); 
+
     await db.Zaduzenje.create({
       studentId: student.id,
       publikacijaId: publikacijaId,
-      datumZaduzenja: new Date(),
+      datumZaduzenja: danas,
+      datumVracanja: rok, 
       status: 'Aktivno'
     });
 
-   
     await knjiga.decrement('stanje', { by: 1 });
 
     res.json({ message: `Uspešno zaduženo studentu ${student.ime}!` });
 
   } catch (error) {
-    
     console.error("GREŠKA :", error);
     res.status(500).json({ message: " greška pri upisu u bazu", error: error.message });
   }

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Dugme } from "../components/Dugme";
+import { Polje } from "../components/Polje";
 
 export default function KatalogPage() {
   const [publikacije, setPublikacije] = useState<any[]>([]);
@@ -28,14 +29,8 @@ export default function KatalogPage() {
 
   const obrisiPublikaciju = async (id: number) => {
     if (!confirm("Obrisati?")) return;
-    try {
-      const res = await fetch(`http://localhost:5000/api/publikacije/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) setPublikacije((prev) => prev.filter((p) => p.id !== id));
-    } catch (err) {
-      alert("Greška pri brisanju.");
-    }
+    const res = await fetch(`http://localhost:5000/api/publikacije/${id}`, { method: "DELETE" });
+    if (res.ok) setPublikacije((prev) => prev.filter((p) => p.id !== id));
   };
 
   const handleZaduzivanje = (id: number) => {
@@ -53,85 +48,51 @@ export default function KatalogPage() {
       });
   };
 
-  // Logika za filtriranje pretrage
-  const filtriranePublikacije = publikacije.filter(
-    (p) =>
-      p.naziv?.toLowerCase().includes(pretraga.toLowerCase()) ||
-      p.autor?.toLowerCase().includes(pretraga.toLowerCase()),
+  const filtrirane = publikacije.filter(p => 
+    p.naziv?.toLowerCase().includes(pretraga.toLowerCase()) || 
+    p.autor?.toLowerCase().includes(pretraga.toLowerCase())
   );
 
-  if (ucitavanje)
-    return <div className="p-10 text-center font-bold">Ucitavanje...</div>;
+  if (ucitavanje) return <div className="p-10 text-center font-bold">Učitavanje...</div>;
 
   return (
     <div className="py-6 px-4 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-black text-gray-900 uppercase">Katalog</h1>
-        {isAdmin && (
-          <Dugme
-            naslov="+ Nova Publikacija"
-            boja="zelena"
-            klik={() => router.push("/dodaj-publikaciju")}
-          />
-        )}
+        <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight">Katalog</h1>
+        {isAdmin && <Dugme naslov="+ Nova" boja="zelena" klik={() => router.push("/dodaj-publikaciju")} />}
       </div>
 
-      {/* Polje za pretragu */}
       <div className="mb-10">
-        <input
-          type="text"
-          placeholder="Pretraži po nazivu ili autoru..."
-          className="w-full p-4 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
-          value={pretraga}
-          onChange={(e) => setPretraga(e.target.value)}
+        <Polje 
+          labela="Pretraga" 
+          placeholder="Unesite naziv ili autora..." 
+          vrednost={pretraga} 
+          promena={setPretraga} 
         />
       </div>
 
-      {filtriranePublikacije.length === 0 ? (
-        <p className="text-center text-gray-500 py-10">
-          Nije pronađena nijedna publikacija.
-        </p>
+      {filtrirane.length === 0 ? (
+        <p className="text-center text-gray-400 py-10">Nema rezultata.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtriranePublikacije.map((p: any) => (
-            <div
-              key={p.id}
-              className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">{p.naziv}</h3>
-                  <p className="text-gray-500 italic">{p.autor}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtrirane.map((p) => (
+            <div key={p.id} className="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-4">
+              <div className="flex justify-between items-start">
+                <div className="max-w-[70%]">
+                  <h3 className="font-bold text-gray-900 truncate">{p.naziv}</h3>
+                  <p className="text-sm text-gray-500 italic">{p.autor}</p>
                 </div>
-                <span
-                  className={`text-xs font-bold px-2 py-1 rounded-md ${p.stanje > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
-                >
-                  Stanje: {p.stanje}
+                <span className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.stanje > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                  Dostupno: {p.stanje}
                 </span>
               </div>
 
-              <div className="flex gap-2 mt-6">
-                {jeSluzbenik && (
-                  <Dugme
-                    naslov="Zaduži"
-                    boja="plava"
-                    onemoguceno={p.stanje <= 0}
-                    klik={() => handleZaduzivanje(p.id)}
-                  />
-                )}
-
+              <div className="flex gap-2 pt-4">
+                {jeSluzbenik && <Dugme naslov="Zaduži" boja="plava" onemoguceno={p.stanje <= 0} klik={() => handleZaduzivanje(p.id)} />}
                 {isAdmin && (
                   <>
-                    <Dugme
-                      naslov="Izmeni"
-                      boja="siva"
-                      klik={() => router.push(`/izmeni-publikaciju/${p.id}`)}
-                    />
-                    <Dugme
-                      naslov="Obriši"
-                      boja="crvena"
-                      klik={() => obrisiPublikaciju(p.id)}
-                    />
+                    <Dugme naslov="Izmeni" boja="siva" klik={() => router.push(`/izmeni-publikaciju/${p.id}`)} />
+                    <Dugme naslov="Obriši" boja="crvena" klik={() => obrisiPublikaciju(p.id)} />
                   </>
                 )}
               </div>

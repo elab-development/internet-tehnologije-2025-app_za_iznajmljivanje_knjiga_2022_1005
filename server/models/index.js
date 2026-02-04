@@ -44,6 +44,7 @@ db.Kategorija.hasMany(db.Publikacija, {
     
 });
 
+db.Zaduzenje.belongsTo(db.Publikacija, { foreignKey: 'publikacijaId' });
 
 db.Publikacija.belongsTo(db.Kategorija, { 
     foreignKey: 'kategorijaId', 

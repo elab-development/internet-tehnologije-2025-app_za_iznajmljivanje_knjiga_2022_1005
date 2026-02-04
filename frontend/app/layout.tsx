@@ -70,9 +70,7 @@ export default function RootLayout({
               </Link>
             ) : (
               <div className="flex items-center gap-6">
-                <span className="text-[10px] font-black bg-gray-100 px-2 py-1 rounded text-gray-400 uppercase">
-                  Sistem Aktivan
-                </span>
+               
                 <button
                   onClick={odjaviSe}
                   className="text-sm font-black text-red-500 hover:text-red-700 transition-colors uppercase tracking-widest"

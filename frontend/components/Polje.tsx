@@ -1,5 +1,15 @@
 "use client";
-export const Polje = ({ labela, type = "text", vrednost, promena, placeholder, readOnly }: any) => (
+
+interface PoljeProps {
+  labela: string;
+  type?: string;
+  vrednost: string | number;
+  promena?: (val: string) => void;
+  placeholder?: string;
+  readOnly?: boolean;
+}
+
+export const Polje = ({ labela, type = "text", vrednost, promena, placeholder, readOnly }: PoljeProps) => (
   <div className="flex flex-col mb-4">
     <label className="mb-1 text-sm font-bold text-gray-700">{labela}</label>
     <input 
