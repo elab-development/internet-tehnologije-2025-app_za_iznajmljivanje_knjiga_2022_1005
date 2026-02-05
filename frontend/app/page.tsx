@@ -29,7 +29,9 @@ export default function KatalogPage() {
 
   const obrisiPublikaciju = async (id: number) => {
     if (!confirm("Obrisati?")) return;
-    const res = await fetch(`http://localhost:5000/api/publikacije/${id}`, { method: "DELETE" });
+    const res = await fetch(`http://localhost:5000/api/publikacije/${id}`, {
+      method: "DELETE",
+    });
     if (res.ok) setPublikacije((prev) => prev.filter((p) => p.id !== id));
   };
 
@@ -48,26 +50,36 @@ export default function KatalogPage() {
       });
   };
 
-  const filtrirane = publikacije.filter(p => 
-    p.naziv?.toLowerCase().includes(pretraga.toLowerCase()) || 
-    p.autor?.toLowerCase().includes(pretraga.toLowerCase())
+  const filtrirane = publikacije.filter(
+    (p) =>
+      p.naziv?.toLowerCase().includes(pretraga.toLowerCase()) ||
+      p.autor?.toLowerCase().includes(pretraga.toLowerCase()),
   );
 
-  if (ucitavanje) return <div className="p-10 text-center font-bold">Učitavanje...</div>;
+  if (ucitavanje)
+    return <div className="p-10 text-center font-bold">Učitavanje...</div>;
 
   return (
     <div className="py-6 px-4 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight">Katalog</h1>
-        {isAdmin && <Dugme naslov="+ Nova" boja="zelena" klik={() => router.push("/dodaj-publikaciju")} />}
+        <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight">
+          Katalog
+        </h1>
+        {isAdmin && (
+          <Dugme
+            naslov="+ Nova"
+            boja="zelena"
+            klik={() => router.push("/dodaj-publikaciju")}
+          />
+        )}
       </div>
 
       <div className="mb-10">
-        <Polje 
-          labela="Pretraga" 
-          placeholder="Unesite naziv ili autora..." 
-          vrednost={pretraga} 
-          promena={setPretraga} 
+        <Polje
+          labela="Pretraga"
+          placeholder="Unesite naziv ili autora..."
+          vrednost={pretraga}
+          promena={setPretraga}
         />
       </div>
 
@@ -76,23 +88,45 @@ export default function KatalogPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtrirane.map((p) => (
-            <div key={p.id} className="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-4">
+            <div
+              key={p.id}
+              className="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-4"
+            >
               <div className="flex justify-between items-start">
                 <div className="max-w-[70%]">
-                  <h3 className="font-bold text-gray-900 truncate">{p.naziv}</h3>
+                  <h3 className="font-bold text-gray-900 truncate">
+                    {p.naziv}
+                  </h3>
                   <p className="text-sm text-gray-500 italic">{p.autor}</p>
                 </div>
-                <span className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.stanje > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                <span
+                  className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.stanje > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                >
                   Dostupno: {p.stanje}
                 </span>
               </div>
 
               <div className="flex gap-2 pt-4">
-                {jeSluzbenik && <Dugme naslov="Zaduži" boja="plava" onemoguceno={p.stanje <= 0} klik={() => handleZaduzivanje(p.id)} />}
+                {jeSluzbenik && (
+                  <Dugme
+                    naslov="Zaduži"
+                    boja="plava"
+                    onemoguceno={p.stanje <= 0}
+                    klik={() => handleZaduzivanje(p.id)}
+                  />
+                )}
                 {isAdmin && (
                   <>
-                    <Dugme naslov="Izmeni" boja="siva" klik={() => router.push(`/izmeni-publikaciju/${p.id}`)} />
-                    <Dugme naslov="Obriši" boja="crvena" klik={() => obrisiPublikaciju(p.id)} />
+                    <Dugme
+                      naslov="Izmeni"
+                      boja="siva"
+                      klik={() => router.push(`/izmeni-publikaciju/${p.id}`)}
+                    />
+                    <Dugme
+                      naslov="Obriši"
+                      boja="crvena"
+                      klik={() => obrisiPublikaciju(p.id)}
+                    />
                   </>
                 )}
               </div>
