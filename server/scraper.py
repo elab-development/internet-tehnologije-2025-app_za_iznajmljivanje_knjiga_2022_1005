@@ -36,7 +36,7 @@ try:
                 print(f"{uvezeno}. DODATA KNJIGA: {naslov} ({autor})")
 
     db.commit()
-    print(f"\nUSPEH: Tvoja čitaonica je dopunjena sa {uvezeno} novih naslova na srpskom jeziku.")
+    print(f"\n dopunjena sa {uvezeno} novih knjiga.")
 
 except Exception as e:
     print(f"Greška: {e}")
