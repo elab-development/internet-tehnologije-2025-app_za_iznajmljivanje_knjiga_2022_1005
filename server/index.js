@@ -5,6 +5,7 @@ const loginRoutes = require("./routes/loginRoutes");
 const korisniciRoutes = require("./routes/korisniciRoutes");
 const auth = require("./middleware/authMiddleware");
 
+
 const app = express();
 
 app.use(cors());
@@ -109,6 +110,50 @@ app.put("/api/razduzi/:id", auth, async (req, res) => {
     const zaduzenje = await db.Zaduzenje.findByPk(req.params.id);
     if (!zaduzenje)
       return res.status(404).json({ message: "Zaduženje nije nađeno" });
+app.get('/api/admin/studenti', auth, async (req, res) => {
+    try {
+        const studenti = await db.Student.findAll();
+        res.json(studenti);
+    } catch (error) {
+        res.status(500).json({ message: "Greška pri dohvatanju studenata" });
+    }
+});
+app.get('/api/admin/sluzbenici', auth, async (req, res) => {
+    try {
+        
+        const sluzbenici = await db.Sluzbenik.findAll({ 
+            where: { isAdmin: false } 
+        });
+        res.json(sluzbenici);
+    } catch (error) {
+        res.status(500).json({ message: "Greška pri dohvatanju službenika" });
+    }
+});
+app.delete('/api/admin/brisi/:tip/:id', auth, async (req, res) => {
+    try {
+        const { tip, id } = req.params;
+        if (tip === 'student') {
+            await db.Student.destroy({ where: { id } });
+        } else {
+            await db.Sluzbenik.destroy({ where: { id } });
+        }
+        res.json({ message: "Nalog obrisan" });
+    } catch (error) {
+        console.error("greskaa:", error); 
+        res.status(500).json({ message: "greskaa pri brisanju", detalji: error.message });
+    }
+});
+app.get('/api/zaduzenja/aktivna', auth, async (req, res) => {
+    const aktivna = await db.Zaduzenje.findAll({
+        where: { status: 'Aktivno' },
+        include: [{ model: db.Publikacija }] 
+    });
+    res.json(aktivna);
+});
+app.put('/api/razduzi/:id', auth, async (req, res) => {
+    try {
+        const zaduzenje = await db.Zaduzenje.findByPk(req.params.id);
+        if (!zaduzenje) return res.status(404).json({ message: "Zaduženje nije nađeno" });
 
     zaduzenje.status = "Vraćeno";
     await zaduzenje.save();
