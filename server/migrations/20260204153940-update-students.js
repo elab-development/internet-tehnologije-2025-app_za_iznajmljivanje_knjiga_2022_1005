@@ -3,14 +3,14 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
-    await queryInterface.changeColumn('students', 'brojIndeksa', {
+    await queryInterface.changeColumn('Students', 'brojIndeksa', {
       type: Sequelize.STRING,
       unique: true,
       allowNull: false
     });
 
    
-    await queryInterface.changeColumn('students', 'email', {
+    await queryInterface.changeColumn('Students', 'email', {
       type: Sequelize.STRING,
       unique: true,
       allowNull: false
@@ -18,13 +18,13 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.changeColumn('students', 'brojIndeksa', {
+    await queryInterface.changeColumn('Students', 'brojIndeksa', {
       type: Sequelize.STRING,
       unique: false,
       allowNull: false
     });
 
-    await queryInterface.changeColumn('students', 'email', {
+    await queryInterface.changeColumn('Students', 'email', {
       type: Sequelize.STRING,
       unique: false,
       allowNull: false

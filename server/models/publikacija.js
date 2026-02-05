@@ -26,11 +26,11 @@ module.exports = (sequelize, DataTypes) => {
     stanje: DataTypes.INTEGER,
     kategorijaId: DataTypes.INTEGER
   }, {
-    sequelize,
-    modelName: 'Publikacija',
-    tableName: 'publikacijas',
-    timestamps: false,
-    freezeTableName: true  
+  sequelize,
+  freezeTableName: true,   
+  tableName: 'publikacijas', 
+  
+  timestamps: false
   });
   return Publikacija;
 };

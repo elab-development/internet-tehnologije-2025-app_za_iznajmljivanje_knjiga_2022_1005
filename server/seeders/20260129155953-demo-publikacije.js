@@ -8,18 +8,16 @@ module.exports = {
         isbn: '123-456',
         autor: 'Brendan Eich',
         stanje: 5,
-        kategorijaId: 1, // Ovo je za Udžbenike
-        createdAt: new Date(),
-        updatedAt: new Date()
+        kategorijaId: 1, 
+        
       },
       {
         naziv: 'Na Drini ćuprija',
         isbn: '789-101',
         autor: 'Ivo Andrić',
         stanje: 2,
-        kategorijaId: 2, // Ovo je za Beletristiku
-        createdAt: new Date(),
-        updatedAt: new Date()
+        kategorijaId: 2, 
+       
       }
     ]);
   },

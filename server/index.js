@@ -132,9 +132,9 @@ app.delete('/api/admin/brisi/:tip/:id', auth, async (req, res) => {
 });
 app.get('/api/zaduzenja/aktivna', auth, async (req, res) => {
     const aktivna = await db.Zaduzenje.findAll({
-        where: { status: 'Aktivno' },
-        include: [{ model: db.Publikacija }] 
-    });
+    where: { status: 'Aktivna' },
+    include: [{ model: db.Publikacija }] 
+});
     res.json(aktivna);
 });
 app.put('/api/razduzi/:id', auth, async (req, res) => {

@@ -3,9 +3,9 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.bulkInsert('Kategorijas', [
-      { naziv: 'Udžbenici', createdAt: new Date(), updatedAt: new Date() },
-      { naziv: 'Beletristika', createdAt: new Date(), updatedAt: new Date() },
-      { naziv: 'Naučni radovi', createdAt: new Date(), updatedAt: new Date() }
+      { naziv: 'Udžbenici'  },
+      { naziv: 'Beletristika'  },
+      { naziv: 'Naučni radovi'}
     ]);
   },
 

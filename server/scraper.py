@@ -2,16 +2,28 @@ import requests
 import mysql.connector
 import time
 
+
 BAZA = "citaonica"
+USER = "root"
+PASSWORD = "itehhh"  
+HOST = "127.0.0.1"  
+PORT = 3306
 
 QUERY = "informacioni sistemi"
 URL = f"https://www.googleapis.com/books/v1/volumes?q={QUERY}&langRestrict=sr&printType=books&maxResults=20"
 
 try:
-    db = mysql.connector.connect(host="localhost", user="root", password="", database=BAZA)
+ 
+    db = mysql.connector.connect(
+        host=HOST,
+        user=USER,
+        password=PASSWORD,
+        database=BAZA,
+        port=PORT
+    )
     cursor = db.cursor()
 
-    print(f"Pretražujem bazu stručne literature (Tema: {QUERY})...")
+    print(f" aaa {QUERY})...")
     response = requests.get(URL)
     podaci = response.json()
 
@@ -23,20 +35,22 @@ try:
             autori = info.get("authors", ["Katedra za IT"])
             autor = autori[0]
             
-            
             identifikatori = info.get("industryIdentifiers", [])
             isbn = identifikatori[0].get("identifier") if identifikatori else f"ISBN-{int(time.time()) + uvezeno}"
 
-            
             if naslov and len(naslov) > 5:
-                sql = """INSERT INTO publikacijas (naziv, autor, isbn, stanje, createdAt, updatedAt) 
-                         VALUES (%s, %s, %s, %s, NOW(), NOW())"""
-                cursor.execute(sql, (naslov, autor, isbn, 15))
+         
+                sql = """INSERT INTO publikacijas (naziv, autor, isbn, stanje, kategorijaId) 
+                         VALUES (%s, %s, %s, %s, %s)"""
+                
+               
+                cursor.execute(sql, (naslov, autor, isbn, 15, 1)) 
+                
                 uvezeno += 1
                 print(f"{uvezeno}. DODATA KNJIGA: {naslov} ({autor})")
 
     db.commit()
-    print(f"\n dopunjena sa {uvezeno} novih knjiga.")
+    print(f" dopunjena sa {uvezeno} knjiga")
 
 except Exception as e:
     print(f"Greška: {e}")

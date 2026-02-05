@@ -5,21 +5,15 @@ module.exports = {
     return queryInterface.bulkInsert('Zaduzenjes', [
       {
         datumZaduzenja: new Date(),
-        datumVracanja: new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000), // Za 14 dana
+        datumVracanja: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000), 
         status: 'Aktivno',
-        studentId: 1, // Student Tijana
-        publikacijaId: 1, // Knjiga "Programiranje u JS"
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
+        studentId: 1, 
+        publikacijaId: 1, 
         datumZaduzenja: new Date(),
         datumVracanja: null,
-        status: 'Vraceno',
-        studentId: 2, // Student Marko
-        publikacijaId: 2, // Knjiga "Na Drini ćuprija"
-        createdAt: new Date(),
-        updatedAt: new Date()
+        studentId: 2, 
+        publikacijaId: 2, 
+      
       }
     ]);
   },
