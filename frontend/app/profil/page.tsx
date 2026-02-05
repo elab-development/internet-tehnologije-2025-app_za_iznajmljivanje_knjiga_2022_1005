@@ -30,13 +30,8 @@ export default function ProfilPage() {
       const res = await fetch("http://localhost:5000/api/zaduzenja/aktivna", {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       });
-      if (res.ok) {
-        const data = await res.json();
-        setSvaZaduzenja(data); 
-      }
-    } catch (err) {
-      console.error("Greska pri ucitavanju: ", err);
-    }
+      if (res.ok) setSvaZaduzenja(await res.json());
+    } catch (err) { console.error(err); }
   };
 
   const handleRazduzi = async (id: number) => {
@@ -49,7 +44,7 @@ export default function ProfilPage() {
   };
 
   const deaktiviraj = async (tip: string, id: number) => {
-    if (!confirm(`Deaktivirati nalog?`)) return;
+    if (!confirm(`Da li ste sigurni?`)) return;
     const res = await fetch(`http://localhost:5000/api/admin/brisi/${tip}/${id}`, {
       method: "DELETE",
       headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
@@ -68,65 +63,82 @@ export default function ProfilPage() {
         .then(res => res.json()).then(setZaduzenja).finally(() => setLoading(false));
     } else {
       if (Number(user.isAdmin) === 1) ucitajAdminPodatke();
-      else if (user.uloga === "sluzbenik") ucitajZaduzenja();
+      if (user.uloga === "sluzbenik") ucitajZaduzenja();
       setLoading(false);
     }
   }, []);
 
-  if (!korisnik) return <div className="p-10 text-center font-bold text-gray-400">Prijavite se.</div>;
+  if (!korisnik) return <div className="p-10 text-center font-bold">Učitavanje...</div>;
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
-      <section className="bg-white rounded-3xl border p-8 flex items-center gap-6 shadow-sm">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-xl font-black uppercase">
+    <div className="p-8 max-w-6xl mx-auto space-y-12">
+ 
+      <section className="bg-white rounded-[2rem] border border-gray-100 p-8 flex items-center gap-8 shadow-sm">
+        <div className="w-24 h-24 bg-gradient-to-tr from-gray-100 to-gray-200 text-gray-800 rounded-full flex items-center justify-center text-3xl font-black uppercase shadow-inner">
           {korisnik.ime?.[0]}{korisnik.prezime?.[0]}
         </div>
-        <div>
-          <h1 className="text-xl font-black uppercase">{korisnik.ime} {korisnik.prezime}</h1>
-          <p className="text-sm text-gray-500">{korisnik.email}</p>
-          <span className={`inline-block mt-2 px-3 py-1 rounded text-[10px] font-black uppercase text-white ${isAdmin ? "bg-red-600" : "bg-blue-600"}`}>
-            {isAdmin ? "Admin" : jeSluzbenik ? "Službenik" : "Student"}
-          </span>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-black uppercase tracking-tight text-gray-900">{korisnik.ime} {korisnik.prezime}</h1>
+          <p className="text-gray-500 font-medium">{korisnik.email}</p>
+          <div className={`inline-block px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest text-white shadow-sm ${isAdmin ? "bg-red-500" : "bg-blue-500"}`}>
+            {isAdmin ? "Administrator" : jeSluzbenik ? "Službenik" : "Student"}
+          </div>
         </div>
       </section>
 
       {isAdmin && (
-        <div className="grid md:grid-cols-2 gap-4">
-          {[ { t: 'Studenti', d: studenti, type: 'student' }, { t: 'Službenici', d: sluzbenici, type: 'sluzbenik' } ].map(list => (
-            <div key={list.t} className="bg-white p-5 rounded-3xl border">
-              <h2 className="text-xs font-black uppercase mb-4">{list.t}</h2>
-              {list.d.map((u: any) => (
-                <div key={u.id} className="flex justify-between items-center p-2 border-b last:border-0">
-                  <span className="text-sm">{u.ime} {u.prezime || ""}</span>
-                  <button onClick={() => deaktiviraj(list.type, u.id)} className="text-[10px] text-red-600 font-bold uppercase">Ukloni</button>
+        <div className="grid lg:grid-cols-2 gap-8">
+          <div className="space-y-4">
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 px-2">Upravljanje Studentima</h2>
+            <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm">
+              {studenti.map((s) => (
+                <div key={s.id} className="flex justify-between items-center p-5 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+                  <span className="font-bold text-gray-700">{s.ime} {s.prezime}</span>
+                  <Dugme naslov="Ukloni" boja="crvena" klik={() => deaktiviraj('student', s.id)} />
                 </div>
               ))}
             </div>
-          ))}
+          </div>
+          <div className="space-y-4">
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 px-2">Upravljanje Službenicima</h2>
+            <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm">
+              {sluzbenici.map((sl) => (
+                <div key={sl.id} className="flex justify-between items-center p-5 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+                  <span className="font-bold text-gray-700">{sl.ime} {sl.prezime || ""}</span>
+                  <Dugme naslov="Ukloni" boja="crvena" klik={() => deaktiviraj('sluzbenik', sl.id)} />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
       {jeSluzbenik && (
-        <section className="space-y-3">
-          <h2 className="text-sm font-black uppercase px-2">Trenutna zaduženja ({svaZaduzenja.length})</h2>
-          {svaZaduzenja.map(z => (
-            <div key={z.id} className="p-4 bg-white border rounded-2xl flex justify-between items-center">
-              <div>
-                <p className="text-sm font-black uppercase">{z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"}</p>
-                <p className="text-[10px] text-gray-400 font-bold">STUDENT ID: {z.studentId}</p>
+        <section className="space-y-6">
+          <h2 className="text-xl font-black uppercase tracking-tight text-gray-900 px-2">Trenutna zaduženja ({svaZaduzenja.length})</h2>
+          <div className="grid gap-4">
+            {svaZaduzenja.map(z => (
+              <div key={z.id} className="p-6 bg-white border border-blue-50 rounded-[1.5rem] flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:border-blue-200 transition-all">
+                <div className="text-center md:text-left">
+                  <p className="text-lg font-black uppercase text-gray-800">{z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"}</p>
+                  <p className="text-xs font-bold text-blue-500 mt-1 uppercase tracking-widest">Student ID: {z.studentId}</p>
+                </div>
+                <Dugme naslov="Razduži Knjigu" boja="zelena" klik={() => handleRazduzi(z.id)} />
               </div>
-              <Dugme naslov="Razduži" boja="zelena" klik={() => handleRazduzi(z.id)} />
-            </div>
-          ))}
+            ))}
+          </div>
         </section>
       )}
 
+     
       {korisnik.uloga === "student" && (
-        <section className="space-y-3">
-          <h2 className="text-sm font-black uppercase px-2">Moja zaduženja ({zaduzenja.length})</h2>
-          {loading ? <p className="text-xs text-gray-400">Učitavanje...</p> : 
-            zaduzenja.map(z => <ZaduzenjeKartica key={z.id} naziv={z.Publikacija?.naziv || z.publikacija?.naziv} rok={z.datumVracanja} />)
-          }
+        <section className="space-y-6">
+          <h2 className="text-xl font-black uppercase tracking-tight text-gray-900 px-2">Moja zaduženja</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {zaduzenja.map(z => (
+              <ZaduzenjeKartica key={z.id} naziv={z.Publikacija?.naziv || z.publikacija?.naziv} rok={z.datumVracanja} />
+            ))}
+          </div>
         </section>
       )}
     </div>
