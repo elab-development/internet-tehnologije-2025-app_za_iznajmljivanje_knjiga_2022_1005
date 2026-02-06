@@ -8,8 +8,10 @@ services:
       MYSQL_ROOT_PASSWORD: "itehhh"
     ports:
       - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
 
@@ -17,8 +19,26 @@ services:
     build: ./server
     ports:
       - "5000:5000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  scraper:
+    build: ./server
+    restart: always
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - PYTHONUNBUFFERED=1
+
+    command: python scraper.py
     depends_on:
       db:
         condition: service_healthy
@@ -27,5 +47,8 @@ services:
     build: ./frontend
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
