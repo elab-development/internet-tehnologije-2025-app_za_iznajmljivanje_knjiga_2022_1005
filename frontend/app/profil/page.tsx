@@ -15,16 +15,30 @@ export default function ProfilPage() {
   const jeSluzbenik = korisnik?.uloga === "sluzbenik" && !isAdmin;
 
   const ucitajAdminPodatke = async () => {
-    const token = localStorage.getItem("token");
-    const headers = { "Authorization": `Bearer ${token}` };
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const headers = { "Authorization": `Bearer ${token}` };
+
+  try {
     const [resS, resSl] = await Promise.all([
       fetch("http://localhost:5000/api/admin/studenti", { headers }),
       fetch("http://localhost:5000/api/admin/sluzbenici", { headers })
     ]);
-    setStudenti(await resS.json());
-    setSluzbenici(await resSl.json());
-  };
 
+    const dataS = resS.ok ? await resS.json() : [];
+    const dataSl = resSl.ok ? await resSl.json() : [];
+
+
+    setStudenti(Array.isArray(dataS) ? dataS : []);
+    setSluzbenici(Array.isArray(dataSl) ? dataSl : []);
+
+  } catch (err) {
+    console.error("Greška u fetch-u:", err);
+    setStudenti([]);
+    setSluzbenici([]);
+  }
+};
   const ucitajZaduzenja = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/zaduzenja/aktivna", {

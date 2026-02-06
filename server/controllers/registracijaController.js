@@ -1,6 +1,5 @@
 "use strict";
 const db = require("../models");
-const bcrypt = require("bcryptjs");
 
 exports.register = async (req, res) => {
   try {
@@ -10,26 +9,25 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Sva polja su obavezna." });
     }
 
-    const postojiEmail = await db.Student.findOne({ where: { email } });
+    const StudentModel = db.Student || db.Students;
+
+    const postojiEmail = await StudentModel.findOne({ where: { email } });
     if (postojiEmail) {
       return res.status(409).json({ message: "Email je već registrovan." });
     }
 
-    const postojiIndeks = await db.Student.findOne({ where: { brojIndeksa } });
+    const postojiIndeks = await StudentModel.findOne({ where: { brojIndeksa } });
     if (postojiIndeks) {
-      return res
-        .status(409)
-        .json({ message: "Broj indeksa je već u upotrebi." });
+      return res.status(409).json({ message: "Broj indeksa je već u upotrebi." });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
-
-    const novi = await db.Student.create({
+  
+    const novi = await StudentModel.create({
       ime,
       prezime,
       brojIndeksa,
       email,
-      password: hashed,
+      password: password, 
     });
 
     return res.status(201).json({
@@ -43,8 +41,9 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     console.error("Registracija error:", error);
-    return res
-      .status(500)
-      .json({ message: "Greška na serveru", error: error.message });
+    return res.status(500).json({ 
+      message: "Greška na serveru", 
+      error: error.message 
+    });
   }
 };

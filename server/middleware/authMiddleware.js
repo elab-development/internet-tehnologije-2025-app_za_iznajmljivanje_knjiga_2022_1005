@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
   try {
    
     const cistiToken = token.split(' ')[1] || token;
-    const dekodiran = jwt.verify(cistiToken, 'tajna_sifra_123');
+    const dekodiran = jwt.verify(cistiToken, 'itehhh');
     req.user = dekodiran; 
     next(); 
   } catch (err) {

@@ -108,25 +108,55 @@ app.post("/api/zaduzi-knjigu", async (req, res) => {
 app.put("/api/razduzi/:id", auth, async (req, res) => {
   try {
     const zaduzenje = await db.Zaduzenje.findByPk(req.params.id);
-    if (!zaduzenje)
+    if (!zaduzenje) {
       return res.status(404).json({ message: "Zaduženje nije nađeno" });
-app.get('/api/admin/studenti', auth, async (req, res) => {
-    try {
-        const studenti = await db.Student.findAll();
-        res.json(studenti);
-    } catch (error) {
-        res.status(500).json({ message: "Greška pri dohvatanju studenata" });
     }
-});
+
+    zaduzenje.status = "Vraćeno";
+    await zaduzenje.save();
+
+    const knjiga = await db.Publikacija.findByPk(zaduzenje.publikacijaId);
+    if (knjiga) {
+      await knjiga.increment("stanje", { by: 1 });
+    }
+
+    res.json({ message: "Knjiga uspešno vraćena!" });
+  } catch (error) {
+    res.status(500).json({ message: "Greška na serveru", error: error.message });
+  }
+}); 
+
 app.get('/api/admin/sluzbenici', auth, async (req, res) => {
     try {
-        
-        const sluzbenici = await db.Sluzbenik.findAll({ 
+        const sluzbenici = await db.Sluzbeniks.findAll({ 
             where: { isAdmin: false } 
         });
-        res.json(sluzbenici);
+       
+        res.json(Array.isArray(sluzbenici) ? sluzbenici : []);
     } catch (error) {
-        res.status(500).json({ message: "Greška pri dohvatanju službenika" });
+        console.error("GRESKA ADMIN SLUZBENICI:", error);
+        res.status(500).json([]); 
+    }
+});
+
+app.get('/api/admin/studenti', auth, async (req, res) => {
+ 
+    console.log("LOG: Svi dostupni modeli u db objektu:", Object.keys(db));
+
+    try {
+    
+        let model = db.Student || db.Students || db.student || db.students;
+
+        if (!model) {
+            console.error("LOG: Model za studente NIJE pronađen pod nijednim imenom!");
+            return res.status(500).json({ error: "Model nije definisan", dostupni: Object.keys(db) });
+        }
+
+        const studenti = await model.findAll();
+        res.json(studenti);
+    } catch (error) {
+        console.error("LOG: Greška unutar rute:", error);
+        res.status(500).json([]);
     }
 });
 app.delete('/api/admin/brisi/:tip/:id', auth, async (req, res) => {
@@ -145,7 +175,7 @@ app.delete('/api/admin/brisi/:tip/:id', auth, async (req, res) => {
 });
 app.get('/api/zaduzenja/aktivna', auth, async (req, res) => {
     const aktivna = await db.Zaduzenje.findAll({
-    where: { status: 'Aktivna' },
+    where: { status: 'Aktivno' },
     include: [{ model: db.Publikacija }] 
 });
     res.json(aktivna);

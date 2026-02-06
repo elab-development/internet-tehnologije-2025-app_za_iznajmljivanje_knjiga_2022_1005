@@ -2,18 +2,16 @@ import requests
 import mysql.connector
 import time
 
-
 BAZA = "citaonica"
 USER = "root"
 PASSWORD = "itehhh"  
 HOST = "127.0.0.1"  
 PORT = 3306
 
-QUERY = "informacioni sistemi"
-URL = f"https://www.googleapis.com/books/v1/volumes?q={QUERY}&langRestrict=sr&printType=books&maxResults=20"
+QUERY = "memorija"
+URL = f"https://openlibrary.org/search.json?q={QUERY.replace(' ', '+')}+language:srp&limit=20"
 
 try:
- 
     db = mysql.connector.connect(
         host=HOST,
         user=USER,
@@ -23,37 +21,36 @@ try:
     )
     cursor = db.cursor()
 
-    print(f" aaa {QUERY})...")
-    response = requests.get(URL)
-    podaci = response.json()
-
-    uvezeno = 0
-    if "items" in podaci:
-        for item in podaci["items"]:
-            info = item.get("volumeInfo", {})
-            naslov = info.get("title")
-            autori = info.get("authors", ["Katedra za IT"])
-            autor = autori[0]
-            
-            identifikatori = info.get("industryIdentifiers", [])
-            isbn = identifikatori[0].get("identifier") if identifikatori else f"ISBN-{int(time.time()) + uvezeno}"
-
-            if naslov and len(naslov) > 5:
-         
-                sql = """INSERT INTO publikacijas (naziv, autor, isbn, stanje, kategorijaId) 
-                         VALUES (%s, %s, %s, %s, %s)"""
-                
-               
-                cursor.execute(sql, (naslov, autor, isbn, 15, 1)) 
-                
-                uvezeno += 1
-                print(f"{uvezeno}. DODATA KNJIGA: {naslov} ({autor})")
-
+    cursor.execute("INSERT IGNORE INTO Kategorijas (id, naziv) VALUES (1, 'Opšta')")
     db.commit()
-    print(f" dopunjena sa {uvezeno} knjiga")
+
+    response = requests.get(URL)
+    if response.status_code == 200:
+        podaci = response.json()
+        knjige = podaci.get("docs", [])
+        
+        uvezeno = 0
+        for item in knjige:
+            naslov = item.get("title")
+            autori = item.get("author_name", ["Nepoznat autor"])
+            autor = autori[0]
+            isbn_list = item.get("isbn", [])
+            isbn = isbn_list[0] if isbn_list else f"ISBN-{int(time.time()) + uvezeno}"
+
+            sql = "INSERT INTO Publikacijas (naziv, autor, isbn, stanje, kategorijaId) VALUES (%s, %s, %s, %s, %s)"
+            
+            try:
+                cursor.execute(sql, (naslov, autor, isbn, 10, 1))
+                uvezeno += 1
+                print(f"{uvezeno}. {naslov}")
+            except Exception:
+                continue
+
+        db.commit()
+        print(f"Uvezeno na srpskom: {uvezeno}")
 
 except Exception as e:
-    print(f"Greška: {e}")
+    print(f"Greska: {e}")
 finally:
     if 'db' in locals() and db.is_connected():
         cursor.close()
