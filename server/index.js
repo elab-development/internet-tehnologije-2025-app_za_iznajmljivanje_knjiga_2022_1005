@@ -18,6 +18,41 @@ app.use("/api/registracija", require("./routes/registracijaRoutes"));
 app.use("/api/korisnici", korisniciRoutes);
 const db = require("./models");
 
+app.get("/api/me", auth, async (req, res) => {
+  try {
+    const { id, uloga, isAdmin } = req.user;
+    if (uloga === "student") {
+      const student = await db.Student.findByPk(id, { attributes: ["id", "ime", "prezime", "email", "brojIndeksa"] });
+      if (!student) return res.status(404).json({ message: "Korisnik nije pronađen" });
+      return res.json({
+        id: student.id,
+        ime: student.ime,
+        prezime: student.prezime,
+        email: student.email,
+        uloga: "student",
+        isAdmin: false,
+        brojIndeksa: student.brojIndeksa ?? null,
+      });
+    }
+    if (uloga === "sluzbenik") {
+      const sluzbenik = await db.Sluzbeniks.findByPk(id, { attributes: ["id", "ime", "prezime", "email", "isAdmin"] });
+      if (!sluzbenik) return res.status(404).json({ message: "Korisnik nije pronađen" });
+      return res.json({
+        id: sluzbenik.id,
+        ime: sluzbenik.ime,
+        prezime: sluzbenik.prezime,
+        email: sluzbenik.email,
+        uloga: "sluzbenik",
+        isAdmin: !!sluzbenik.isAdmin,
+        brojIndeksa: null,
+      });
+    }
+    return res.status(400).json({ message: "Nepoznata uloga" });
+  } catch (err) {
+    res.status(500).json({ message: "Greška na serveru", error: err.message });
+  }
+});
+
 app.get("/api/moje-knjige", auth, async (req, res) => {
   try {
     const korisnikId = req.user.id;
@@ -141,21 +176,21 @@ app.get('/api/admin/sluzbenici', auth, async (req, res) => {
 
 app.get('/api/admin/studenti', auth, async (req, res) => {
  
-    console.log("LOG: Svi dostupni modeli u db objektu:", Object.keys(db));
+
 
     try {
     
         let model = db.Student || db.Students || db.student || db.students;
 
         if (!model) {
-            console.error("LOG: Model za studente NIJE pronađen pod nijednim imenom!");
+         
             return res.status(500).json({ error: "Model nije definisan", dostupni: Object.keys(db) });
         }
 
         const studenti = await model.findAll();
         res.json(studenti);
     } catch (error) {
-        console.error("LOG: Greška unutar rute:", error);
+        console.error("greska:", error);
         res.status(500).json([]);
     }
 });
@@ -175,26 +210,13 @@ app.delete('/api/admin/brisi/:tip/:id', auth, async (req, res) => {
 });
 app.get('/api/zaduzenja/aktivna', auth, async (req, res) => {
     const aktivna = await db.Zaduzenje.findAll({
-    where: { status: 'Aktivno' },
-    include: [{ model: db.Publikacija }] 
-});
+      where: { status: 'Aktivno' },
+      include: [
+        { model: db.Publikacija },
+        { model: db.Student, as: 'student', attributes: ['id', 'ime', 'prezime', 'brojIndeksa'] }
+      ]
+    });
     res.json(aktivna);
-});
-app.put('/api/razduzi/:id', auth, async (req, res) => {
-    try {
-        const zaduzenje = await db.Zaduzenje.findByPk(req.params.id);
-        if (!zaduzenje) return res.status(404).json({ message: "Zaduženje nije nađeno" });
-
-    zaduzenje.status = "Vraćeno";
-    await zaduzenje.save();
-
-    const knjiga = await db.Publikacija.findByPk(zaduzenje.publikacijaId);
-    await knjiga.increment("stanje", { by: 1 });
-
-    res.json({ message: "Knjiga uspešno vraćena!" });
-  } catch (error) {
-    res.status(500).json({ message: "Greška na serveru" });
-  }
 });
 
 const PORT = 5000;

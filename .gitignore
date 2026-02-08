@@ -1,0 +1,4 @@
+node_modules/
+mysql_data/
+.env
+*.sock

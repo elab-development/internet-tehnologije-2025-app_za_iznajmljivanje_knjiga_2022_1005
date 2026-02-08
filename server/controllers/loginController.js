@@ -62,7 +62,8 @@ res.json({
     prezime: korisnik.prezime,
     email: korisnik.email,
     uloga: uloga,
-    isAdmin: uloga === 'sluzbenik' ? !!korisnik.isAdmin : false
+    isAdmin: uloga === 'sluzbenik' ? !!korisnik.isAdmin : false,
+    brojIndeksa: uloga === 'student' ? korisnik.brojIndeksa : null
   }
 });
 

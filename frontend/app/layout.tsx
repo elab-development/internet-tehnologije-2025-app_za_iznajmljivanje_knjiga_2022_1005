@@ -39,12 +39,12 @@ export default function RootLayout({
 
   return (
     <html lang="sr">
-      <body className="min-h-screen bg-gray-50 text-gray-900 antialiased font-sans">
-        <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm">
+      <body className="min-h-screen bg-gradient-to-b from-mint/15 via-zuta/5 to-svetlo-plava/20 text-tamno-plava antialiased font-sans">
+        <nav className="bg-white/90 backdrop-blur border-b-2 border-mint/40 px-6 py-4 flex justify-between items-center shadow-sm">
           <div className="flex gap-8 items-center">
             <Link
               href="/"
-              className="font-black text-xl text-blue-800 tracking-tighter"
+              className="text-base font-bold uppercase tracking-tight text-tamno-plava hover:text-tamno-plava/90 transition-colors"
             >
               KATALOG
             </Link>
@@ -53,7 +53,7 @@ export default function RootLayout({
             {korisnik && (
               <Link
                 href="/profil"
-                className={`text-sm font-bold uppercase tracking-wider ${pathname === "/profil" ? "text-blue-600" : "text-gray-500 hover:text-blue-600"}`}
+                className={`text-base font-bold uppercase tracking-tight ${pathname === "/profil" ? "text-roze" : "text-gray-600 hover:text-roze"}`}
               >
                 Moj Profil
               </Link>
@@ -64,7 +64,7 @@ export default function RootLayout({
             {!korisnik ? (
               <Link
                 href="/login"
-                className="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors"
+                className="text-base font-bold uppercase tracking-tight bg-tamno-plava text-white px-5 py-2 rounded-xl hover:bg-tamno-plava/90 transition-colors shadow-md"
               >
                 Prijava
               </Link>
@@ -73,7 +73,7 @@ export default function RootLayout({
                
                 <button
                   onClick={odjaviSe}
-                  className="text-sm font-black text-red-500 hover:text-red-700 transition-colors uppercase tracking-widest"
+                  className="text-base font-bold uppercase tracking-tight text-crvena hover:text-crvena/80 transition-colors"
                 >
                   Odjavi se
                 </button>

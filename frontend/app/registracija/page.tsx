@@ -50,12 +50,12 @@ export default function RegistracijaStranica() {
 
   return (
     <div className="max-w-md mx-auto p-8 mt-12">
-      <h1 className="text-2xl font-bold text-blue-900 mb-6">
+      <h1 className="text-2xl font-bold text-tamno-plava mb-6">
         Registracija studenta
       </h1>
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md border border-gray-100"
+        className="bg-white p-6 rounded-xl shadow-md border-2 border-mint/50"
       >
         <Polje labela="Ime" vrednost={ime} promena={setIme} />
         <Polje labela="Prezime" vrednost={prezime} promena={setPrezime} />
@@ -83,7 +83,7 @@ export default function RegistracijaStranica() {
           promena={setConfirmPassword}
         />
 
-        {greska && <p className="text-red-600 text-sm mb-4">{greska}</p>}
+        {greska && <p className="text-crvena text-sm mb-4 font-medium">{greska}</p>}
 
         <div className="flex items-center justify-between">
           <Dugme
@@ -94,7 +94,7 @@ export default function RegistracijaStranica() {
           <button
             type="button"
             onClick={() => router.push("/login")}
-            className="text-sm text-blue-700 underline"
+            className="text-sm text-roze font-semibold hover:text-tamno-plava underline"
           >
             Već imaš nalog? Prijavi se.
           </button>

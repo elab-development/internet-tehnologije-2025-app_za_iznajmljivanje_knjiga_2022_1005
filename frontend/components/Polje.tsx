@@ -18,7 +18,7 @@ export const Polje = ({ labela, type = "text", vrednost, promena, placeholder, r
       onChange={promena ? (e) => promena(e.target.value) : undefined}
       readOnly={readOnly}
       placeholder={placeholder}
-      className="border-2 p-2 rounded focus:border-blue-500 outline-none disabled:bg-gray-100"
+      className="border-2 border-gray-200 p-2 rounded focus:border-mint outline-none disabled:bg-gray-100"
     />
   </div>
 );

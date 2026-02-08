@@ -25,7 +25,7 @@ export const PoljeZaSifru = ({
           value={vrednost}
           onChange={(e) => promena(e.target.value)}
           placeholder={placeholder}
-          className="w-full border-2 p-2 pr-10 rounded focus:border-blue-500 outline-none"
+          className="w-full border-2 border-gray-200 p-2 pr-10 rounded focus:border-mint outline-none"
         />
         <button
           type="button"

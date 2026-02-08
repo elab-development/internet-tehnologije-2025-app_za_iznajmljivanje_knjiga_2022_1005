@@ -57,12 +57,12 @@ export default function KatalogPage() {
   );
 
   if (ucitavanje)
-    return <div className="p-10 text-center font-bold">Učitavanje...</div>;
+    return <div className="p-10 text-center font-bold text-tamno-plava">Učitavanje...</div>;
 
   return (
     <div className="py-6 px-4 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight">
+        <h1 className="text-3xl font-black text-tamno-plava uppercase tracking-tight">
           Katalog
         </h1>
         {isAdmin && (
@@ -90,7 +90,7 @@ export default function KatalogPage() {
           {filtrirane.map((p) => (
             <div
               key={p.id}
-              className="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-4"
+              className="p-6 bg-white border-2 border-svetlo-plava rounded-2xl shadow-sm space-y-4"
             >
               <div className="flex justify-between items-start">
                 <div className="max-w-[70%]">
@@ -100,7 +100,7 @@ export default function KatalogPage() {
                   <p className="text-sm text-gray-500 italic">{p.autor}</p>
                 </div>
                 <span
-                  className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.stanje > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                  className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.stanje > 0 ? "bg-zuta/40 text-tamno-plava" : "bg-crvena/25 text-tamno-plava"}`}
                 >
                   Dostupno: {p.stanje}
                 </span>

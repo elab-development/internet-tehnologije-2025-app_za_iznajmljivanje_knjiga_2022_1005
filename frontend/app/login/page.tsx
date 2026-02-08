@@ -39,10 +39,10 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-md mx-auto p-8 mt-12">
-      <h1 className="text-2xl font-bold text-blue-900 mb-6">Prijava</h1>
+      <h1 className="text-2xl font-bold text-tamno-plava mb-6">Prijava</h1>
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md border border-gray-100"
+        className="bg-white p-6 rounded-xl shadow-md border-2 border-mint/50"
       >
         <Polje
           labela="Email"
@@ -67,7 +67,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => router.push("/registracija")}
-            className="text-sm text-blue-700 underline"
+            className="text-sm text-roze font-semibold hover:text-tamno-plava underline"
           >
             Nemaš nalog? Registruj se.
           </button>

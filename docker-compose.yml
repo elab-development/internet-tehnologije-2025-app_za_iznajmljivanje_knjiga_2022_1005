@@ -50,5 +50,6 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    command: npm run dev -- --webpack
     depends_on:
       - backend

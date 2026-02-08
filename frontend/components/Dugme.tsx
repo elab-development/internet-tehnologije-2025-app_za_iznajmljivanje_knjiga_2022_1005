@@ -1,9 +1,9 @@
 "use client";
 export const Dugme = ({ naslov, klik, boja = "plava", onemoguceno = false }: any) => {
   const stilovi: any = {
-    plava: "bg-blue-600 hover:bg-blue-700",
-    crvena: "bg-red-600 hover:bg-red-700",
-    zelena: "bg-green-600 hover:bg-green-700",
+    plava: "bg-tamno-plava hover:bg-tamno-plava/90",
+    crvena: "bg-crvena hover:bg-crvena/90",
+    zelena: "bg-mint hover:bg-mint/90",
     siva: "bg-gray-400"
   };
 
