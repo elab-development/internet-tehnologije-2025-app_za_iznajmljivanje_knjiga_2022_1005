@@ -115,12 +115,12 @@ export default function ProfilPage() {
         <div className="space-y-1">
           <h1 className="text-3xl font-black uppercase tracking-tight text-tamno-plava">{korisnik.ime} {korisnik.prezime}</h1>
           <p className="text-gray-600 font-medium">E-mail: {korisnik.email}</p>
- {/* {!isAdmin && !jeSluzbenik && (
+  {!isAdmin && !jeSluzbenik && (
     <p className="text-gray-600 font-medium text-sm">
        BROJ INDEKSA: <span className="text-tamno-plava font-bold">{korisnik.brojIndeksa || korisnik.student?.brojIndeksa || "Nije dostupan"}</span>
     </p> 
   )} 
-*/}
+
  
 
 
@@ -168,7 +168,7 @@ export default function ProfilPage() {
               <div key={z.id} className="p-6 bg-white border-2 border-svetlo-plava rounded-[1.5rem] flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:border-mint transition-all">
                 <div className="text-center md:text-left">
                   <p className="text-lg font-black uppercase text-tamno-plava">{z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"}</p>
-                  <p className="text-xs font-bold text-mint mt-1 uppercase tracking-widest">Studentov ID: {z.student?.brojIndeksa || z.Student?.brojIndeksa || z.studentId}</p>
+                  <p className="text-xs font-bold text-mint mt-1 uppercase tracking-widest">Studentov broj indeksa: {z.student?.brojIndeksa || z.Student?.brojIndeksa || z.studentId}</p>
                 </div>
                 <Dugme naslov="Razduži Knjigu" boja="zelena" klik={() => handleRazduzi(z.id)} />
               </div>

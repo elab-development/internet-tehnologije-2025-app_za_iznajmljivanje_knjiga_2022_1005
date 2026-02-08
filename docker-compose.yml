@@ -30,15 +30,16 @@ services:
 
 
   scraper:
-    build: ./server
-    restart: always
+    image: python:3.9
+    working_dir: /app
     volumes:
       - ./server:/app
-      - /app/node_modules
     environment:
       - PYTHONUNBUFFERED=1
-
-    command: python scraper.py
+    restart: "no"
+    command: >
+      sh -c "pip install --no-cache-dir requests beautifulsoup4 mysql-connector-python && 
+             python3 scraper.py"
     depends_on:
       db:
         condition: service_healthy

@@ -67,7 +67,7 @@ export default function KatalogPage() {
         </h1>
         {isAdmin && (
           <Dugme
-            naslov="+ Nova"
+            naslov="+ Nova publikacija"
             boja="zelena"
             klik={() => router.push("/dodaj-publikaciju")}
           />

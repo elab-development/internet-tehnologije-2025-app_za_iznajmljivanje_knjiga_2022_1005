@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 
 interface PoljeZaSifruProps {
   labela: string;
@@ -33,7 +34,21 @@ export const PoljeZaSifru = ({
           className="absolute right-2 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform"
           title={prikaziSifru ? "Sakrij lozinku" : "Prikaži lozinku"}
         >
-          {prikaziSifru ? "👁️" : "🙈"}
+          {prikaziSifru ? (
+    <Image 
+      src="/seen.png" 
+      alt="Sakrij lozinku" 
+      width={20} 
+      height={20} 
+    />
+  ) : (
+    <Image 
+      src="/eyebrow.png" 
+      alt="Prikaži lozinku" 
+      width={20} 
+      height={20} 
+    />
+  )}
         </button>
       </div>
     </div>

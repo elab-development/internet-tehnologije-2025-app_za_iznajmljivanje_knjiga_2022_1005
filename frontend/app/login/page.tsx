@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Polje } from "../../components/Polje";
 import { Dugme } from "../../components/Dugme";
+import { PoljeZaSifru } from "../../components/PoljeZaSifru";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -51,11 +52,10 @@ export default function LoginPage() {
           promena={setEmail}
           placeholder="npr jovan@fon.bg.ac.rs"
         />
-        <Polje
-          labela="Lozinka"
-          type="password"
-          vrednost={password}
-          promena={setPassword}
+        <PoljeZaSifru
+           labela="Lozinka"
+            vrednost={password}
+            promena={setPassword}
         />
         {greska && <p className="text-red-600 text-sm mb-4">{greska}</p>}
         <div className="flex items-center justify-between">

@@ -139,6 +139,28 @@ app.post("/api/zaduzi-knjigu", async (req, res) => {
       .json({ message: " greška pri upisu u bazu", error: error.message });
   }
 });
+app.post("/api/admin/kreiraj-sluzbenika", auth, async (req, res) => {
+  try {
+    
+
+    const { ime, prezime, email, password } = req.body;
+
+    const isAdmin = 0; 
+
+    await db.Sluzbeniks.create({
+      ime,
+      prezime,
+      email,
+      password, 
+      isAdmin: isAdmin
+    });
+
+    res.status(201).json({ message: "Službenik uspešno kreiran!" });
+  } catch (err) {
+    console.error("Greška pri kreiranju službenika:", err);
+    res.status(500).json({ message: "Greška na serveru", error: err.message });
+  }
+});
 
 app.put("/api/razduzi/:id", auth, async (req, res) => {
   try {

@@ -12,6 +12,9 @@ export default function RootLayout({
   const [korisnik, setKorisnik] = useState<any>(null);
   const pathname = usePathname();
 
+  // Provera da li je trenutno ulogovani korisnik administrator
+  const isAdmin = korisnik && Number(korisnik.isAdmin) === 1;
+
   const osveziKorisnika = () => {
     const podaci = localStorage.getItem("korisnik");
     if (podaci) {
@@ -26,7 +29,6 @@ export default function RootLayout({
 
   useEffect(() => {
     osveziKorisnika();
-
     const interval = setInterval(osveziKorisnika, 500);
     return () => clearInterval(interval);
   }, [korisnik]);
@@ -49,14 +51,25 @@ export default function RootLayout({
               KATALOG
             </Link>
 
-            {}
             {korisnik && (
-              <Link
-                href="/profil"
-                className={`text-base font-bold uppercase tracking-tight ${pathname === "/profil" ? "text-roze" : "text-gray-600 hover:text-roze"}`}
-              >
-                Moj Profil
-              </Link>
+              <>
+                <Link
+                  href="/profil"
+                  className={`text-base font-bold uppercase tracking-tight ${pathname === "/profil" ? "text-roze" : "text-gray-600 hover:text-roze"}`}
+                >
+                  Moj Profil
+                </Link>
+
+                {/* OVAJ DEO JE DODAT: Vidi ga samo Admin */}
+                {isAdmin && (
+                  <Link
+                    href="/kreiraj-sluzbenika"
+                    className={`text-base font-bold uppercase tracking-tight ${pathname === "/kreiraj-sluzbenika" ? "text-mint" : "text-gray-600 hover:text-mint"}`}
+                  >
+                    Kreiraj službenika
+                  </Link>
+                )}
+              </>
             )}
           </div>
 
@@ -70,7 +83,6 @@ export default function RootLayout({
               </Link>
             ) : (
               <div className="flex items-center gap-6">
-               
                 <button
                   onClick={odjaviSe}
                   className="text-base font-bold uppercase tracking-tight text-crvena hover:text-crvena/80 transition-colors"

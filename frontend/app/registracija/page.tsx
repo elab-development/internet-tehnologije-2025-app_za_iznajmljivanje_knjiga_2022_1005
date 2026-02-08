@@ -39,7 +39,7 @@ export default function RegistracijaStranica() {
         return;
       }
 
-      // Ako backend vrati uspeh, preusmeri na prijavu
+     
       router.push("/potvrda");
     } catch (err) {
       setGreska("Server nije dostupan ili nema endpoint za registraciju.");
@@ -48,44 +48,53 @@ export default function RegistracijaStranica() {
     }
   };
 
-  return (
-    <div className="max-w-md mx-auto p-8 mt-12">
-      <h1 className="text-2xl font-bold text-tamno-plava mb-6">
+ return (
+    <div className="max-w-2xl mx-auto p-8 mt-12"> 
+      <h1 className="text-3xl font-bold text-tamno-plava mb-8 text-center">
         Registracija studenta
       </h1>
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md border-2 border-mint/50"
+        className="bg-white p-10 rounded-2xl shadow-lg border-2 border-mint/50"
       >
-        <Polje labela="Ime" vrednost={ime} promena={setIme} />
-        <Polje labela="Prezime" vrednost={prezime} promena={setPrezime} />
-        <Polje
-          labela="Broj indeksa"
-          vrednost={brojIndeksa}
-          promena={setBrojIndeksa}
-          placeholder="npr. 2022/123"
-        />
-        <Polje
-          labela="Email"
-          type="email"
-          vrednost={email}
-          promena={setEmail}
-          placeholder="npr. jovan@fon.bg.ac.rs"
-        />
-        <PoljeZaSifru
-          labela="Lozinka"
-          vrednost={password}
-          promena={setPassword}
-        />
-        <PoljeZaSifru
-          labela="Potvrdi lozinku"
-          vrednost={confirmPassword}
-          promena={setConfirmPassword}
-        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Polje labela="Ime" vrednost={ime} promena={setIme} />
+          <Polje labela="Prezime" vrednost={prezime} promena={setPrezime} />
+        </div>
 
-        {greska && <p className="text-crvena text-sm mb-4 font-medium">{greska}</p>}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Polje
+            labela="Broj indeksa"
+            vrednost={brojIndeksa}
+            promena={setBrojIndeksa}
+            placeholder="npr. 2022/123"
+          />
+          <Polje
+            labela="Email"
+            type="email"
+            vrednost={email}
+            promena={setEmail}
+            placeholder="npr. jovan@fon.bg.ac.rs"
+          />
+        </div>
 
-        <div className="flex items-center justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <PoljeZaSifru
+            labela="Lozinka"
+            vrednost={password}
+            promena={setPassword}
+          />
+          <PoljeZaSifru
+            labela="Potvrdi lozinku"
+            vrednost={confirmPassword}
+            promena={setConfirmPassword}
+          />
+        </div>
+
+        {greska && <p className="text-crvena text-sm my-4 font-medium text-center">{greska}</p>}
+
+        <div className="flex flex-col md:flex-row items-center justify-between mt-8 gap-4">
           <Dugme
             naslov={ucitava ? "Registrujem..." : "Registruj se"}
             boja="plava"
