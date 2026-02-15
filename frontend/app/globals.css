@@ -2,13 +2,13 @@
 @import "tailwindcss";
 
 @theme {
-  /* Paleta boja */
+ 
   --color-svetlo-plava: #C3E7FF;
   --color-tamno-plava: #004B7C;
   --color-mint: #60C3AD;
   --color-roze: #D057A0;
   --color-zuta: #FFCD67;
   --color-crvena: #F48580;
-  /* Font */
+  
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
 }

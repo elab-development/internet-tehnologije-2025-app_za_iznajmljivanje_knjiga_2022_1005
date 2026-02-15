@@ -24,6 +24,13 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
+      - TZ=Europe/Belgrade
+      - EMAIL_USER=boskovictijana99@gmail.com
+      - EMAIL_PASS=rcdp cedb ptkq jker 
+      - DB_HOST=db
+      - DB_NAME=citaonica
+      - DB_USER=root
+      - DB_PASS=itehhh
     depends_on:
       db:
         condition: service_healthy

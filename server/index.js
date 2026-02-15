@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const { startCron } = require('./eksterni/email');
+const { proveriISaljiPodsetnike } = require("./eksterni/email");
 const publikacijaRoutes = require("./routes/publikacijaRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const korisniciRoutes = require("./routes/korisniciRoutes");
@@ -241,7 +243,22 @@ app.get('/api/zaduzenja/aktivna', auth, async (req, res) => {
     res.json(aktivna);
 });
 
+app.get("/api/debug-rok", async (req, res) => {
+  try {
+    console.log("--- RUČNO POKRETANJE PROVERE ROKOVA ---");
+    await proveriISaljiPodsetnike();
+    res.json({ 
+        message: "Provera pokrenuta! Proveri terminal u Dockeru i svoj inbox.",
+        savet: "Ako mejl nije stigao, proveri da li u bazi imaš zaduženje sa datumom: 17.02.2026." 
+    });
+  } catch (err) {
+    console.error("Greška pri ručnom testu:", err);
+    res.status(500).json({ message: "Greška!", error: err.message });
+  }
+});
+
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server radi na portu ${PORT}`);
+  startCron(); 
 });
