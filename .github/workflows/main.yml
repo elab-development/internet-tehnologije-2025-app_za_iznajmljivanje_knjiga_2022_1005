@@ -21,12 +21,12 @@ jobs:
 
       - name: Instalacija zavisnosti (Backend)
         run: |
-          cd backend
+          cd server
           npm install
 
       - name: Build Backend
         run: |
-          cd backend
+          cd server
           npm run build --if-present
 
       - name: Instalacija zavisnosti (Frontend)
