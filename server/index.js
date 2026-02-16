@@ -7,9 +7,11 @@ const loginRoutes = require("./routes/loginRoutes");
 const korisniciRoutes = require("./routes/korisniciRoutes");
 const auth = require("./middleware/authMiddleware");
 const istrazi = require('./eksterni/istrazi');
+const express = require('express');
+const helmet = require('helmet');
 
 
-
+app.use(helmet());
 const app = express();
 
 app.use(cors());
