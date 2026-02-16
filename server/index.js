@@ -6,6 +6,8 @@ const publikacijaRoutes = require("./routes/publikacijaRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const korisniciRoutes = require("./routes/korisniciRoutes");
 const auth = require("./middleware/authMiddleware");
+const istrazi = require('./eksterni/istrazi');
+
 
 
 const app = express();
@@ -18,6 +20,7 @@ app.use("/api/publikacije", publikacijaRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/registracija", require("./routes/registracijaRoutes"));
 app.use("/api/korisnici", korisniciRoutes);
+app.use('/api/eksterni', istrazi);
 const db = require("./models");
 
 app.get("/api/me", auth, async (req, res) => {
@@ -255,6 +258,20 @@ app.get("/api/debug-rok", async (req, res) => {
     console.error("Greška pri ručnom testu:", err);
     res.status(500).json({ message: "Greška!", error: err.message });
   }
+});
+app.get('/zaduzenja/istorija/:studentId', async (req, res) => {
+    try {
+        const istorija = await Zaduzenje.findAll({
+            where: {
+                studentId: req.params.studentId,
+                status: 'Vraćeno' 
+            },
+            include: ['Publikacija'] 
+        });
+        res.json(istorija);
+    } catch (err) {
+        res.status(500).json({ message: "Greška pri učitavanju istorije." });
+    }
 });
 
 const PORT = 5000;

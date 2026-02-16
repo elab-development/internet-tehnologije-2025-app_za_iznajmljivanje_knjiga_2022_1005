@@ -5,9 +5,10 @@ import time
 
 
 BAZA = "citaonica"
-USER = "user2"
-PASSWORD = "iteh2"  
+USER = "root"
+PASSWORD = "itehhh"  
 HOST = "127.0.0.1"  
+HOST = "db"  
 PORT = 3306
 
 QUERY = "cetvrti-razred-srednje-skole-oblast-88-grupa-120"

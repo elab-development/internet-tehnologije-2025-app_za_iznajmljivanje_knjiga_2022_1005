@@ -10,6 +10,10 @@ export default function ProfilPage() {
   const [studenti, setStudenti] = useState<any[]>([]);
   const [sluzbenici, setSluzbenici] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [wikiPojam, setWikiPojam] = useState("");
+  const [wikiData, setWikiData] = useState<any>(null);
+  const [wikiLoading, setWikiLoading] = useState(false);
+  const [istorijaZaduzenja, setIstorijaZaduzenja] = useState<any[]>([]);
 
   const isAdmin = Number(korisnik?.isAdmin) === 1;
   const jeSluzbenik = korisnik?.uloga === "sluzbenik" && !isAdmin;
@@ -65,6 +69,25 @@ export default function ProfilPage() {
     });
     if (res.ok) ucitajAdminPodatke();
   };
+  const pretraziWiki = async () => {
+    if (!wikiPojam) return;
+    setWikiLoading(true);
+    try {
+      
+      const res = await fetch(`http://localhost:5000/api/eksterni/istrazi/${wikiPojam}`);
+      if (res.ok) {
+        const data = await res.json();
+        setWikiData(data);
+      } else {
+        alert("Pojam nije pronađen.");
+        setWikiData(null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setWikiLoading(false);
+    }
+  };
 
   useEffect(() => {
     const podaci = localStorage.getItem("korisnik");
@@ -105,6 +128,7 @@ export default function ProfilPage() {
 
   if (!korisnik) return <div className="p-10 text-center font-bold text-tamno-plava">Učitavanje...</div>;
 
+
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-12">
  
@@ -120,13 +144,6 @@ export default function ProfilPage() {
        BROJ INDEKSA: <span className="text-tamno-plava font-bold">{korisnik.brojIndeksa || korisnik.student?.brojIndeksa || "Nije dostupan"}</span>
     </p> 
   )} 
-
- 
-
-
-
-  
-  
           <div className={`inline-block px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest text-white shadow-sm ${isAdmin ? "bg-crvena" : jeSluzbenik ? "bg-mint" : "bg-tamno-plava"}`}>
             {isAdmin ? "Administrator" : jeSluzbenik ? "Službenik" : "Student"}
           </div>
@@ -179,15 +196,83 @@ export default function ProfilPage() {
 
      
       {korisnik.uloga === "student" && (
-        <section className="space-y-6">
-          <h2 className="text-xl font-black uppercase tracking-tight text-roze px-2">Moja zaduženja</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {zaduzenja.filter(z => z.status !== "Vraćeno").map(z => (
-              <ZaduzenjeKartica key={z.id} naziv={z.Publikacija?.naziv || z.publikacija?.naziv} rok={z.datumVracanja} />
-            ))}
-          </div>
-        </section>
+        <>  
+  <section className="space-y-6">
+    <h2 className="text-xl font-black uppercase tracking-tight text-roze px-2">
+      Trenutna zaduženja
+    </h2>
+    <div className="grid md:grid-cols-2 gap-4">
+     
+      {zaduzenja.filter(z => z.status !== "Vraćeno").map(z => (
+        <ZaduzenjeKartica 
+          key={z.id} 
+          naziv={z.Publikacija?.naziv || z.publikacija?.naziv} 
+          rok={z.datumVracanja} 
+        />
+      ))}
+      {zaduzenja.filter(z => z.status !== "Vraćeno").length === 0 && (
+        <p className="text-gray-400 italic px-2">Trenutno nemate aktivnih zaduženja.</p>
+      )}
+    </div>
+  </section>
+
+  <section className="space-y-6 mt-10">
+  <h2 className="text-xl font-black uppercase tracking-tight text-gray-400 px-2 flex items-center gap-2">
+    Istorija (Vraćene knjige)
+  </h2>
+ <div className="grid md:grid-cols-2 gap-4 opacity-80"> 
+    {zaduzenja.filter(z => z.status === "Vraćeno").map(z => (
+      <ZaduzenjeKartica 
+        key={z.id} 
+        naziv={z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"} 
+      
+        rok={"KNJIGA JE USPEŠNO VRAĆENA."} 
+      />
+    ))}
+  </div>
+</section>
+
+           <section className="space-y-6">
+            <h2 className="text-xl font-black uppercase tracking-tight text-tamno-plava px-2">
+              Pretraži nepoznati pojam na Vikipediji
+            </h2>
+            <div className="bg-white rounded-[2rem] border-2 border-svetlo-plava p-6 shadow-sm">
+              <div className="flex gap-4">
+                <input
+                  type="text"
+                  placeholder="Istraži pojam (npr. Next.js, Docker...)"
+                  className="flex-1 px-4 py-2 border-2 border-mint/30 rounded-full outline-none focus:border-mint transition-all"
+                  value={wikiPojam}
+                  onChange={(e) => setWikiPojam(e.target.value)}
+                />
+                <Dugme 
+                   naslov={wikiLoading ? "Učitavanje..." : "Istraži"} 
+                   boja="zelena" 
+                   klik={pretraziWiki} 
+                />
+              </div>
+
+              {wikiData && (
+                <div className="mt-6 p-6 bg-mint/5 rounded-[1.5rem] border border-mint/20 animate-in fade-in slide-in-from-top-4">
+                  <h3 className="text-lg font-black text-tamno-plava uppercase">{wikiData.naslov}</h3>
+                  <p className="text-gray-700 mt-2 leading-relaxed italic">
+                    {wikiData.opis}
+                  </p>
+                  <a 
+                    href={wikiData.link} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="inline-block mt-4 text-xs font-black uppercase tracking-widest text-roze hover:underline"
+                  >
+                    Pročitaj ceo članak na Vikipediji →
+                  </a>
+                </div>
+              )}
+            </div>
+          </section>
+        </>
       )}
     </div>
   );
+  
 }

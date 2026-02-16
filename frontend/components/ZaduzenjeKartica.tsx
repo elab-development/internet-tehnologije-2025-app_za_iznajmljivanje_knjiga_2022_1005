@@ -7,8 +7,13 @@ interface ZaduzenjeProps {
 
 export const ZaduzenjeKartica = ({ naziv, rok }: ZaduzenjeProps) => {
   const danas = new Date();
-  const rokDatum = new Date(rok);
-  const jeIsteklo = rokDatum < danas && rok !== "Nije definisano";
+  
+  
+  const validanDatum = !isNaN(Date.parse(rok));
+  const rokDatum = validanDatum ? new Date(rok) : null;
+  
+  
+  const jeIsteklo = rokDatum && rokDatum < danas && rok !== "Nije definisano";
 
   return (
     <div className={`flex justify-between items-center p-6 rounded-2xl border transition-all ${
@@ -19,7 +24,10 @@ export const ZaduzenjeKartica = ({ naziv, rok }: ZaduzenjeProps) => {
           {naziv}
         </h3>
         <p className={`text-xs mt-1 font-medium ${jeIsteklo ? "text-crvena" : "text-gray-500"}`}>
-          ROK ZA VRAĆANJE: {rok !== "Nije definisano" ? rokDatum.toLocaleDateString("sr-RS") : "Nije definisano"}
+         
+          {validanDatum && rokDatum 
+            ? `ROK ZA VRAĆANJE: ${rokDatum.toLocaleDateString("sr-RS")}` 
+            : rok}
         </p>
       </div>
       {jeIsteklo && (
