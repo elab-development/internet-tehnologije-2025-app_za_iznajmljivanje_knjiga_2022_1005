@@ -22,6 +22,7 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
+      - ./server/swagger.json:/app/swagger.json
     environment:
       - NODE_ENV=development
       - TZ=Europe/Belgrade

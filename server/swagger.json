@@ -1,0 +1,168 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Biblioteka API",
+    "version": "1.0.0",
+    "description": "Kompletna dokumentacija API-ja za sistem iznajmljivanja knjiga."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+
+    }
+  ],
+  "tags": [
+    { "name": "Korisnik", "description": "Profil i informacije o ulogovanom korisniku" },
+    { "name": "Admin", "description": "Administrativno upravljanje korisnicima" },
+    { "name": "Zaduženja", "description": "Upravljanje pozajmicama i vraćanjem knjiga" },
+    { "name": "Eksterno", "description": "Integracija sa Open Library i pretraga" }
+  ],
+  "paths": {
+    "/api/me": {
+      "get": {
+        "tags": ["Korisnik"],
+        "summary": "Podaci o trenutno ulogovanom korisniku",
+        "responses": { "200": { "description": "Vraća objekat korisnika" } }
+      }
+    },
+    "/api/moje-knjige": {
+      "get": {
+        "tags": ["Korisnik"],
+        "summary": "Lista aktivnih zaduženja ulogovanog studenta",
+        "responses": { "200": { "description": "Niz zaduženja" } }
+      }
+    },
+    "/api/zaduzi-knjigu": {
+      "post": {
+        "tags": ["Zaduženja"],
+        "summary": "Zaduživanje knjige studentu preko broja indeksa",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "publikacijaId": { "type": "integer" },
+                  "brojIndeksa": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Uspešno zaduženo" } }
+      }
+    },
+    "/api/razduzi/{id}": {
+      "put": {
+        "tags": ["Zaduženja"],
+        "summary": "Vraćanje knjige (razduživanje)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Knjiga vraćena" } }
+      }
+    },
+    "/api/admin/sluzbenici": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Lista svih službenika (bez admina)",
+        "responses": { "200": { "description": "Niz službenika" } }
+      }
+    },
+    "/api/admin/studenti": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Lista svih studenata",
+        "responses": { "200": { "description": "Niz studenata" } }
+      }
+    },
+    "/api/admin/brisi/{tip}/{id}": {
+      "delete": {
+        "tags": ["Admin"],
+        "summary": "Brisanje studenta ili službenika",
+        "parameters": [
+          { "name": "tip", "in": "path", "required": true, "schema": { "type": "string", "enum": ["student", "sluzbenik"] } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Nalog obrisan" } }
+      }
+    },
+    "/api/admin/kreiraj-sluzbenika": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Dodavanje novog službenika u sistem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ime": { "type": "string" },
+                  "prezime": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Službenik kreiran" } }
+      }
+    },
+    "/api/zaduzenja/aktivna": {
+      "get": {
+        "tags": ["Zaduženja"],
+        "summary": "Pregled svih trenutno aktivnih zaduženja",
+        "responses": { "200": { "description": "Niz svih aktivnih zaduženja" } }
+      }
+    },
+    "/zaduzenja/istorija/{studentId}": {
+      "get": {
+        "tags": ["Zaduženja"],
+        "summary": "Istorija svih vraćenih knjiga za određenog studenta",
+        "parameters": [
+          { "name": "studentId", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Niz istorije" } }
+      }
+    },
+    "/api/proveri-knjigu": {
+      "post": {
+        "tags": ["Eksterno"],
+        "summary": "Povlačenje detalja pre dodavanja nove publikacije",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "naziv": { "type": "string" },
+                  "autor": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Vraća sliku, opis i ocenu" } }
+      }
+    },
+    "/api/eksterni-detalji": {
+      "get": {
+        "tags": ["Eksterno"],
+        "summary": "Povlačenje slika i ocene za već postojeće publikacije",
+        "parameters": [
+          { "name": "naslov", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "autor", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Podaci iz sa OpenLibrary-a" } }
+      }
+    },
+    "/api/debug-rok": {
+      "get": {
+        "tags": ["Eksterno"],
+        "summary": "Ručno pokretanje slanja email podsetnika",
+        "responses": { "200": { "description": "Email provera pokrenuta" } }
+      }
+    }
+  }
+}

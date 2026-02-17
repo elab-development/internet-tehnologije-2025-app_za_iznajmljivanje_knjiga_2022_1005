@@ -12,7 +12,7 @@ export default function RootLayout({
   const [korisnik, setKorisnik] = useState<any>(null);
   const pathname = usePathname();
 
-  // Provera da li je trenutno ulogovani korisnik administrator
+ 
   const isAdmin = korisnik && Number(korisnik.isAdmin) === 1;
 
   const osveziKorisnika = () => {
