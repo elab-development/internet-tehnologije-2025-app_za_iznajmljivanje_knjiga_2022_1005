@@ -30,11 +30,12 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
+
     environment:
       - NODE_ENV=development
       - TZ=Europe/Belgrade
-      - EMAIL_USER=boskovictijana99@gmail.com
-      - EMAIL_PASS=rcdp cedb ptkq jker
+      - EMAIL_USER=jovanbojanic48@gmail.com
+      - EMAIL_PASS=tqzl yhvn ipnh tqjj
       - DB_HOST=db
       - DB_NAME=citaonica
       - DB_USER=root
