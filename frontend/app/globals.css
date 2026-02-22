@@ -2,13 +2,25 @@
 @import "tailwindcss";
 
 @theme {
- 
-  --color-svetlo-plava: #C3E7FF;
-  --color-tamno-plava: #004B7C;
-  --color-mint: #60C3AD;
-  --color-roze: #D057A0;
-  --color-zuta: #FFCD67;
-  --color-crvena: #F48580;
-  
+  --color-svetlo-plava: #c3e7ff;
+  --color-tamno-plava: #004b7c;
+  --color-mint: #60c3ad;
+  --color-roze: #d057a0;
+  --color-zuta: #ffcd67;
+  --color-crvena: #f48580;
+
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+}
+@keyframes mrdniGoreDole {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animacija-skok {
+  animation: mrdniGoreDole 0.2s ease-in-out;
 }
