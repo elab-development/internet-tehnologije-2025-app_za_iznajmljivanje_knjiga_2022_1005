@@ -8,7 +8,7 @@ export const Footer = () => {
       <div className="max-w-6xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div className="space-y-4">
           <h2 className="text-xl font-black uppercase tracking-tighter text-mint">
-            Biblioteka "Svet reči"
+            Biblioteka "Biblos"
           </h2>
           <p className="text-gray-300 text-sm leading-relaxed">
             Vaš prozor u svet znanja i mašte. Nudimo bogat fond publikacija i
