@@ -11,6 +11,16 @@ export default function KatalogPage() {
   const [ucitavanje, setUcitavanje] = useState(true);
   const [pretraga, setPretraga] = useState("");
   const router = useRouter();
+  const [modalOtvoren, setModalOtvoren] = useState(false);
+  const [selektovanaPublikacijaId, setSelektovanaPublikacijaId] = useState<
+    number | null
+  >(null);
+  const [indeks, setIndeks] = useState("");
+  const [feedback, setFeedback] = useState<{
+    poruka: string;
+    uspeh: boolean;
+  } | null>(null);
+  const [mrdni, setMrdni] = useState(false);
 
   useEffect(() => {
     const sacuvanKorisnik = localStorage.getItem("korisnik");
@@ -34,18 +44,45 @@ export default function KatalogPage() {
     if (res.ok) setPublikacije((prev) => prev.filter((p) => p.id !== id));
   };
 
-  const handleZaduzivanje = (id: number) => {
-    const indeks = prompt("Unesite broj indeksa studenta:");
-    if (!indeks) return;
+  const otvoriModal = (id: number) => {
+    setSelektovanaPublikacijaId(id);
+    setIndeks("");
+    setFeedback(null);
+    setModalOtvoren(true);
+  };
+
+  const izvrsiZaduzivanje = () => {
+    if (!indeks || !selektovanaPublikacijaId) return;
+
+    setMrdni(true);
+    setTimeout(() => setMrdni(false), 200);
+
     fetch("http://localhost:5000/api/zaduzi-knjigu", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ publikacijaId: id, brojIndeksa: indeks }),
+      body: JSON.stringify({
+        publikacijaId: selektovanaPublikacijaId,
+        brojIndeksa: indeks,
+      }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        alert(data.message);
-        if (data.message.includes("uspešno")) window.location.reload();
+      .then((res) => {
+        const isOk = res.ok;
+        return res.json().then((data) => ({ isOk, data }));
+      })
+      .then(({ isOk, data }) => {
+        setFeedback({
+          poruka: data.message,
+          uspeh: isOk,
+        });
+
+        if (isOk) {
+          fetch("http://localhost:5000/api/publikacije")
+            .then((res) => res.json())
+            .then((newData) => setPublikacije(newData));
+        }
+      })
+      .catch(() => {
+        setFeedback({ poruka: "Greška na serveru", uspeh: false });
       });
   };
 
@@ -55,7 +92,16 @@ export default function KatalogPage() {
       p.autor?.toLowerCase().includes(pretraga.toLowerCase())
   );
 
+<<<<<<< HEAD
   if (ucitavanje) return <div className="p-10 text-center font-bold text-tamno-plava">Učitavanje...</div>;
+=======
+  if (ucitavanje)
+    return (
+      <div className="p-10 text-center font-bold text-tamno-plava">
+        Učitavanje...
+      </div>
+    );
+>>>>>>> f381f9cdc917f14c45f9aaa8c34f2e6d7c21aaee
 
   return (
     <div className="py-6 px-4 max-w-7xl mx-auto">
@@ -73,6 +119,7 @@ export default function KatalogPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtrirane.map((p) => (
+<<<<<<< HEAD
             <KarticaSaPodacima 
               key={p.id} 
               p={p} 
@@ -82,7 +129,111 @@ export default function KatalogPage() {
               handleZaduzivanje={handleZaduzivanje} 
               router={router} 
             />
+=======
+            <div
+              key={p.id}
+              className="p-6 bg-white border-2 border-svetlo-plava rounded-2xl shadow-sm space-y-4"
+            >
+              <div className="flex justify-between items-start">
+                <div className="max-w-[70%]">
+                  <h3 className="font-bold text-gray-900 truncate">
+                    {p.naziv}
+                  </h3>
+                  <p className="text-sm text-gray-500 italic">{p.autor}</p>
+                </div>
+                <span
+                  className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.stanje > 0 ? "bg-zuta/40 text-tamno-plava" : "bg-crvena/25 text-tamno-plava"}`}
+                >
+                  Dostupno: {p.stanje}
+                </span>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                {jeSluzbenik && (
+                  <Dugme
+                    naslov="Zaduži"
+                    boja="plava"
+                    onemoguceno={p.stanje <= 0}
+                    klik={() => otvoriModal(p.id)}
+                  />
+                )}
+                {isAdmin && (
+                  <>
+                    <Dugme
+                      naslov="Izmeni"
+                      boja="siva"
+                      klik={() => router.push(`/izmeni-publikaciju/${p.id}`)}
+                    />
+                    <Dugme
+                      naslov="Obriši"
+                      boja="crvena"
+                      klik={() => obrisiPublikaciju(p.id)}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+>>>>>>> f381f9cdc917f14c45f9aaa8c34f2e6d7c21aaee
           ))}
+        </div>
+      )}
+      {modalOtvoren && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div
+            className={`bg-white w-full max-w-md p-8 rounded-[2rem] border-2 border-svetlo-plava shadow-2xl space-y-6 animate-in zoom-in-95 duration-200 
+    ${mrdni ? "animacija-skok" : ""}`}
+          >
+            <h2 className="text-xl font-black text-tamno-plava uppercase">
+              Zaduživanje knjige
+            </h2>
+
+            <form
+              className="space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!feedback?.uspeh) izvrsiZaduzivanje();
+              }}
+            >
+              <Polje
+                labela="Broj indeksa studenta"
+                placeholder="npr. 2020/0001"
+                vrednost={indeks}
+                promena={setIndeks}
+              />
+
+              {feedback && (
+                <p
+                  className={`text-sm font-bold text-center p-2 rounded-lg ${
+                    feedback.uspeh
+                      ? "text-green-600 bg-green-50"
+                      : "text-red-600 bg-red-50"
+                  }`}
+                >
+                  {feedback.poruka}
+                </p>
+              )}
+
+              <div className="flex flex-col gap-3 pt-2">
+                {!feedback?.uspeh && (
+                  <Dugme
+                    naslov="Potvrdi zaduženje"
+                    boja="zelena"
+                    tip="submit"
+                    klik={izvrsiZaduzivanje}
+                  />
+                )}
+                <Dugme
+                  naslov="Gotovo"
+                  boja="plava"
+                  tip="button"
+                  klik={() => {
+                    setModalOtvoren(false);
+                    setFeedback(null);
+                  }}
+                />
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

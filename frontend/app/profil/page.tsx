@@ -5,8 +5,8 @@ import { Dugme } from "../../components/Dugme";
 
 export default function ProfilPage() {
   const [korisnik, setKorisnik] = useState<any>(null);
-  const [zaduzenja, setZaduzenja] = useState<any[]>([]); 
-  const [svaZaduzenja, setSvaZaduzenja] = useState<any[]>([]); 
+  const [zaduzenja, setZaduzenja] = useState<any[]>([]);
+  const [svaZaduzenja, setSvaZaduzenja] = useState<any[]>([]);
   const [studenti, setStudenti] = useState<any[]>([]);
   const [sluzbenici, setSluzbenici] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,67 +14,71 @@ export default function ProfilPage() {
   const [wikiData, setWikiData] = useState<any>(null);
   const [wikiLoading, setWikiLoading] = useState(false);
   const [istorijaZaduzenja, setIstorijaZaduzenja] = useState<any[]>([]);
-
+  const [pretragaIndeksa, setPretragaIndeksa] = useState("");
   const isAdmin = Number(korisnik?.isAdmin) === 1;
   const jeSluzbenik = korisnik?.uloga === "sluzbenik" && !isAdmin;
 
   const ucitajAdminPodatke = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-  const headers = { "Authorization": `Bearer ${token}` };
+    const headers = { Authorization: `Bearer ${token}` };
 
-  try {
-    const [resS, resSl] = await Promise.all([
-      fetch("http://localhost:5000/api/admin/studenti", { headers }),
-      fetch("http://localhost:5000/api/admin/sluzbenici", { headers })
-    ]);
+    try {
+      const [resS, resSl] = await Promise.all([
+        fetch("http://localhost:5000/api/admin/studenti", { headers }),
+        fetch("http://localhost:5000/api/admin/sluzbenici", { headers }),
+      ]);
 
-    const dataS = resS.ok ? await resS.json() : [];
-    const dataSl = resSl.ok ? await resSl.json() : [];
+      const dataS = resS.ok ? await resS.json() : [];
+      const dataSl = resSl.ok ? await resSl.json() : [];
 
-
-    setStudenti(Array.isArray(dataS) ? dataS : []);
-    setSluzbenici(Array.isArray(dataSl) ? dataSl : []);
-
-  } catch (err) {
-    console.error("Greška u fetch-u:", err);
-    setStudenti([]);
-    setSluzbenici([]);
-  }
-};
+      setStudenti(Array.isArray(dataS) ? dataS : []);
+      setSluzbenici(Array.isArray(dataSl) ? dataSl : []);
+    } catch (err) {
+      console.error("Greška u fetch-u:", err);
+      setStudenti([]);
+      setSluzbenici([]);
+    }
+  };
   const ucitajZaduzenja = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/zaduzenja/aktivna", {
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (res.ok) setSvaZaduzenja(await res.json());
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleRazduzi = async (id: number) => {
     if (!confirm("Potvrdi vraćanje?")) return;
     const res = await fetch(`http://localhost:5000/api/razduzi/${id}`, {
       method: "PUT",
-      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
     if (res.ok) ucitajZaduzenja();
   };
 
   const deaktiviraj = async (tip: string, id: number) => {
     if (!confirm(`Da li ste sigurni?`)) return;
-    const res = await fetch(`http://localhost:5000/api/admin/brisi/${tip}/${id}`, {
-      method: "DELETE",
-      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-    });
+    const res = await fetch(
+      `http://localhost:5000/api/admin/brisi/${tip}/${id}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      },
+    );
     if (res.ok) ucitajAdminPodatke();
   };
   const pretraziWiki = async () => {
     if (!wikiPojam) return;
     setWikiLoading(true);
     try {
-      
-      const res = await fetch(`http://localhost:5000/api/eksterni/istrazi/${wikiPojam}`);
+      const res = await fetch(
+        `http://localhost:5000/api/eksterni/istrazi/${wikiPojam}`,
+      );
       if (res.ok) {
         const data = await res.json();
         setWikiData(data);
@@ -99,7 +103,9 @@ export default function ProfilPage() {
       setKorisnik(k);
       if (k.uloga === "student") {
         fetch(`http://localhost:5000/api/zaduzenja/student/${k.id}`)
-          .then(res => res.json()).then(setZaduzenja).finally(() => setLoading(false));
+          .then((res) => res.json())
+          .then(setZaduzenja)
+          .finally(() => setLoading(false));
       } else {
         if (Number(k.isAdmin) === 1) ucitajAdminPodatke();
         if (k.uloga === "sluzbenik") ucitajZaduzenja();
@@ -113,8 +119,10 @@ export default function ProfilPage() {
       return;
     }
 
-    fetch("http://localhost:5000/api/me", { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => res.ok ? res.json() : null)
+    fetch("http://localhost:5000/api/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : null))
       .then((me) => {
         if (me) {
           postaviKorisnikaIZaduzenja(me);
@@ -126,25 +134,46 @@ export default function ProfilPage() {
       .catch(() => postaviKorisnikaIZaduzenja(user));
   }, []);
 
-  if (!korisnik) return <div className="p-10 text-center font-bold text-tamno-plava">Učitavanje...</div>;
+  if (!korisnik)
+    return (
+      <div className="p-10 text-center font-bold text-tamno-plava">
+        Učitavanje...
+      </div>
+    );
 
-
+  const filtriranaZaduzenja = svaZaduzenja.filter((z) => {
+    const brojIndeksa = (
+      z.student?.brojIndeksa ||
+      z.Student?.brojIndeksa ||
+      String(z.studentId)
+    ).toLowerCase();
+    return brojIndeksa.includes(pretragaIndeksa.toLowerCase());
+  });
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-12">
- 
-<section className="bg-white rounded-[2rem] border-2 border-mint/60 p-8 flex items-center gap-8 shadow-sm">
+      <section className="bg-white rounded-[2rem] border-2 border-mint/60 p-8 flex items-center gap-8 shadow-sm">
         <div className="w-24 h-24 bg-gradient-to-tr from-mint to-roze text-white rounded-full flex items-center justify-center text-3xl font-black uppercase shadow-inner">
-          {korisnik.ime?.[0]}{korisnik.prezime?.[0]}
+          {korisnik.ime?.[0]}
+          {korisnik.prezime?.[0]}
         </div>
         <div className="space-y-1">
-          <h1 className="text-3xl font-black uppercase tracking-tight text-tamno-plava">{korisnik.ime} {korisnik.prezime}</h1>
+          <h1 className="text-3xl font-black uppercase tracking-tight text-tamno-plava">
+            {korisnik.ime} {korisnik.prezime}
+          </h1>
           <p className="text-gray-600 font-medium">E-mail: {korisnik.email}</p>
-  {!isAdmin && !jeSluzbenik && (
-    <p className="text-gray-600 font-medium text-sm">
-       BROJ INDEKSA: <span className="text-tamno-plava font-bold">{korisnik.brojIndeksa || korisnik.student?.brojIndeksa || "Nije dostupan"}</span>
-    </p> 
-  )} 
-          <div className={`inline-block px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest text-white shadow-sm ${isAdmin ? "bg-crvena" : jeSluzbenik ? "bg-mint" : "bg-tamno-plava"}`}>
+          {!isAdmin && !jeSluzbenik && (
+            <p className="text-gray-600 font-medium text-sm">
+              BROJ INDEKSA:{" "}
+              <span className="text-tamno-plava font-bold">
+                {korisnik.brojIndeksa ||
+                  korisnik.student?.brojIndeksa ||
+                  "Nije dostupan"}
+              </span>
+            </p>
+          )}
+          <div
+            className={`inline-block px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest text-white shadow-sm ${isAdmin ? "bg-crvena" : jeSluzbenik ? "bg-mint" : "bg-tamno-plava"}`}
+          >
             {isAdmin ? "Administrator" : jeSluzbenik ? "Službenik" : "Student"}
           </div>
         </div>
@@ -153,23 +182,45 @@ export default function ProfilPage() {
       {isAdmin && (
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-roze px-2">Upravljanje Studentima</h2>
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-roze px-2">
+              Upravljanje Studentima
+            </h2>
             <div className="bg-white rounded-[2rem] border-2 border-mint/50 overflow-hidden shadow-sm">
               {studenti.map((s) => (
-                <div key={s.id} className="flex justify-between items-center p-5 border-b border-mint/30 last:border-0 hover:bg-mint/10 transition-colors">
-                  <span className="font-bold text-gray-700">{s.ime} {s.prezime}</span>
-                  <Dugme naslov="Ukloni" boja="crvena" klik={() => deaktiviraj('student', s.id)} />
+                <div
+                  key={s.id}
+                  className="flex justify-between items-center p-5 border-b border-mint/30 last:border-0 hover:bg-mint/10 transition-colors"
+                >
+                  <span className="font-bold text-gray-700">
+                    {s.ime} {s.prezime}
+                  </span>
+                  <Dugme
+                    naslov="Ukloni"
+                    boja="crvena"
+                    klik={() => deaktiviraj("student", s.id)}
+                  />
                 </div>
               ))}
             </div>
           </div>
           <div className="space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-roze px-2">Upravljanje Službenicima</h2>
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-roze px-2">
+              Upravljanje Službenicima
+            </h2>
             <div className="bg-white rounded-[2rem] border-2 border-mint/50 overflow-hidden shadow-sm">
               {sluzbenici.map((sl) => (
-                <div key={sl.id} className="flex justify-between items-center p-5 border-b border-mint/30 last:border-0 hover:bg-mint/10 transition-colors">
-                  <span className="font-bold text-tamno-plava">{sl.ime} {sl.prezime || ""}</span>
-                  <Dugme naslov="Ukloni" boja="crvena" klik={() => deaktiviraj('sluzbenik', sl.id)} />
+                <div
+                  key={sl.id}
+                  className="flex justify-between items-center p-5 border-b border-mint/30 last:border-0 hover:bg-mint/10 transition-colors"
+                >
+                  <span className="font-bold text-tamno-plava">
+                    {sl.ime} {sl.prezime || ""}
+                  </span>
+                  <Dugme
+                    naslov="Ukloni"
+                    boja="crvena"
+                    klik={() => deaktiviraj("sluzbenik", sl.id)}
+                  />
                 </div>
               ))}
             </div>
@@ -179,60 +230,103 @@ export default function ProfilPage() {
 
       {jeSluzbenik && (
         <section className="space-y-6">
-          <h2 className="text-xl font-black uppercase tracking-tight text-tamno-plava px-2">Trenutna zaduženja ({svaZaduzenja.length})</h2>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-2">
+            <h2 className="text-xl font-black uppercase tracking-tight text-tamno-plava">
+              Trenutna zaduženja ({filtriranaZaduzenja.length})
+            </h2>
+
+            {/* Polje za filter po indeksu */}
+            <div className="w-full md:w-64">
+              <input
+                type="text"
+                placeholder="Filter po indeksu..."
+                className="w-full px-4 py-2 border-2 border-svetlo-plava rounded-full outline-none focus:border-mint transition-all text-sm"
+                value={pretragaIndeksa}
+                onChange={(e) => setPretragaIndeksa(e.target.value)}
+              />
+            </div>
+          </div>
+
           <div className="grid gap-4">
-            {svaZaduzenja.map(z => (
-              <div key={z.id} className="p-6 bg-white border-2 border-svetlo-plava rounded-[1.5rem] flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:border-mint transition-all">
+            {/* Mapiramo filtriranaZaduzenja umesto svaZaduzenja */}
+            {filtriranaZaduzenja.map((z) => (
+              <div
+                key={z.id}
+                className="p-6 bg-white border-2 border-svetlo-plava rounded-[1.5rem] flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm hover:border-mint transition-all"
+              >
                 <div className="text-center md:text-left">
-                  <p className="text-lg font-black uppercase text-tamno-plava">{z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"}</p>
-                  <p className="text-xs font-bold text-mint mt-1 uppercase tracking-widest">Studentov broj indeksa: {z.student?.brojIndeksa || z.Student?.brojIndeksa || z.studentId}</p>
+                  <p className="text-lg font-black uppercase text-tamno-plava">
+                    {z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"}
+                  </p>
+                  <p className="text-xs font-bold text-mint mt-1 uppercase tracking-widest">
+                    Studentov broj indeksa:{" "}
+                    {z.student?.brojIndeksa ||
+                      z.Student?.brojIndeksa ||
+                      z.studentId}
+                  </p>
                 </div>
-                <Dugme naslov="Razduži Knjigu" boja="zelena" klik={() => handleRazduzi(z.id)} />
+                <Dugme
+                  naslov="Razduži Knjigu"
+                  boja="zelena"
+                  klik={() => handleRazduzi(z.id)}
+                />
               </div>
             ))}
+
+            {/* Poruka ako nema rezultata pretrage */}
+            {filtriranaZaduzenja.length === 0 && (
+              <p className="text-gray-400 italic px-2">
+                Nema zaduženja koja se poklapaju sa unetim indeksom.
+              </p>
+            )}
           </div>
         </section>
       )}
 
-     
       {korisnik.uloga === "student" && (
-        <>  
-  <section className="space-y-6">
-    <h2 className="text-xl font-black uppercase tracking-tight text-roze px-2">
-      Trenutna zaduženja
-    </h2>
-    <div className="grid md:grid-cols-2 gap-4">
-     
-      {zaduzenja.filter(z => z.status !== "Vraćeno").map(z => (
-        <ZaduzenjeKartica 
-          key={z.id} 
-          naziv={z.Publikacija?.naziv || z.publikacija?.naziv} 
-          rok={z.datumVracanja} 
-        />
-      ))}
-      {zaduzenja.filter(z => z.status !== "Vraćeno").length === 0 && (
-        <p className="text-gray-400 italic px-2">Trenutno nemate aktivnih zaduženja.</p>
-      )}
-    </div>
-  </section>
+        <>
+          <section className="space-y-6">
+            <h2 className="text-xl font-black uppercase tracking-tight text-roze px-2">
+              Trenutna zaduženja
+            </h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              {zaduzenja
+                .filter((z) => z.status !== "Vraćeno")
+                .map((z) => (
+                  <ZaduzenjeKartica
+                    key={z.id}
+                    naziv={z.Publikacija?.naziv || z.publikacija?.naziv}
+                    rok={z.datumVracanja}
+                  />
+                ))}
+              {zaduzenja.filter((z) => z.status !== "Vraćeno").length === 0 && (
+                <p className="text-gray-400 italic px-2">
+                  Trenutno nemate aktivnih zaduženja.
+                </p>
+              )}
+            </div>
+          </section>
 
-  <section className="space-y-6 mt-10">
-  <h2 className="text-xl font-black uppercase tracking-tight text-gray-400 px-2 flex items-center gap-2">
-    Istorija (Vraćene knjige)
-  </h2>
- <div className="grid md:grid-cols-2 gap-4 opacity-80"> 
-    {zaduzenja.filter(z => z.status === "Vraćeno").map(z => (
-      <ZaduzenjeKartica 
-        key={z.id} 
-        naziv={z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"} 
-      
-        rok={"KNJIGA JE USPEŠNO VRAĆENA."} 
-      />
-    ))}
-  </div>
-</section>
+          <section className="space-y-6 mt-10">
+            <h2 className="text-xl font-black uppercase tracking-tight text-gray-400 px-2 flex items-center gap-2">
+              Istorija (Vraćene knjige)
+            </h2>
+            <div className="grid md:grid-cols-2 gap-4 opacity-80">
+              {zaduzenja
+                .filter((z) => z.status === "Vraćeno")
+                .map((z) => (
+                  <ZaduzenjeKartica
+                    key={z.id}
+                    naziv={
+                      z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"
+                    }
+                    rok={"KNJIGA JE USPEŠNO VRAĆENA."}
+                  />
+                ))}
+            </div>
+          </section>
 
-           <section className="space-y-6">
+          <section className="space-y-6">
             <h2 className="text-xl font-black uppercase tracking-tight text-tamno-plava px-2">
               Pretraži nepoznati pojam na Vikipediji
             </h2>
@@ -245,22 +339,24 @@ export default function ProfilPage() {
                   value={wikiPojam}
                   onChange={(e) => setWikiPojam(e.target.value)}
                 />
-                <Dugme 
-                   naslov={wikiLoading ? "Učitavanje..." : "Istraži"} 
-                   boja="zelena" 
-                   klik={pretraziWiki} 
+                <Dugme
+                  naslov={wikiLoading ? "Učitavanje..." : "Istraži"}
+                  boja="zelena"
+                  klik={pretraziWiki}
                 />
               </div>
 
               {wikiData && (
                 <div className="mt-6 p-6 bg-mint/5 rounded-[1.5rem] border border-mint/20 animate-in fade-in slide-in-from-top-4">
-                  <h3 className="text-lg font-black text-tamno-plava uppercase">{wikiData.naslov}</h3>
+                  <h3 className="text-lg font-black text-tamno-plava uppercase">
+                    {wikiData.naslov}
+                  </h3>
                   <p className="text-gray-700 mt-2 leading-relaxed italic">
                     {wikiData.opis}
                   </p>
-                  <a 
-                    href={wikiData.link} 
-                    target="_blank" 
+                  <a
+                    href={wikiData.link}
+                    target="_blank"
                     rel="noreferrer"
                     className="inline-block mt-4 text-xs font-black uppercase tracking-widest text-roze hover:underline"
                   >
@@ -274,5 +370,4 @@ export default function ProfilPage() {
       )}
     </div>
   );
-  
 }
