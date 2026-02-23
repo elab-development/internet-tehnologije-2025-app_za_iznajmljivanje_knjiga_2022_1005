@@ -236,6 +236,7 @@ app.get("/api/admin/studenti", auth, async (req, res) => {
     res.status(500).json([]);
   }
 });
+
 app.delete("/api/admin/brisi/:tip/:id", auth, async (req, res) => {
   try {
     const { tip, id } = req.params;
