@@ -31,6 +31,24 @@ app.use("/api/korisnici", korisniciRoutes);
 app.use("/api/eksterni", istrazi);
 const db = require("./models");
 
+app.post("/api/kontakt", async (req, res) => {
+  const { ime, email, poruka } = req.body;
+
+  const mailOptions = {
+    from: email,
+    to: process.env.EMAIL_USER,
+    subject: `Kontakt forma: Poruka od ${ime}`,
+    text: `Dobili ste novu poruku sa kontakt forme:\n\nIme: ${ime}\nEmail: ${email}\n\nPoruka:\n${poruka}`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return res.status(500).json({ message: "Greška pri slanju mejla" });
+    }
+    res.json({ message: "Poruka je uspešno poslata biblioteci!" });
+  });
+});
+
 app.get("/api/me", auth, async (req, res) => {
   try {
     const { id, uloga, isAdmin } = req.user;

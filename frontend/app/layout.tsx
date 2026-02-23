@@ -59,8 +59,10 @@ export default function RootLayout({
                 >
                   Moj Profil
                 </Link>
-
-                {/* OVAJ DEO JE DODAT: Vidi ga samo Admin */}
+                <Link href="/kontakt" className="font-bold uppercase text-tamno-plava hover:text-mint transition-colors">
+                  Kontakt
+                </Link>
+                
                 {isAdmin && (
                   <Link
                     href="/kreiraj-sluzbenika"
