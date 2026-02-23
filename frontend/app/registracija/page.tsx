@@ -39,7 +39,6 @@ export default function RegistracijaStranica() {
         return;
       }
 
-     
       router.push("/potvrda");
     } catch (err) {
       setGreska("Server nije dostupan ili nema endpoint za registraciju.");
@@ -48,8 +47,8 @@ export default function RegistracijaStranica() {
     }
   };
 
- return (
-    <div className="max-w-2xl mx-auto p-8 mt-12"> 
+  return (
+    <div className="max-w-2xl mx-auto p-8 mt-12">
       <h1 className="text-3xl font-bold text-tamno-plava mb-8 text-center">
         Registracija studenta
       </h1>
@@ -57,7 +56,6 @@ export default function RegistracijaStranica() {
         onSubmit={handleSubmit}
         className="bg-white p-10 rounded-2xl shadow-lg border-2 border-mint/50"
       >
-        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Polje labela="Ime" vrednost={ime} promena={setIme} />
           <Polje labela="Prezime" vrednost={prezime} promena={setPrezime} />
@@ -92,13 +90,18 @@ export default function RegistracijaStranica() {
           />
         </div>
 
-        {greska && <p className="text-crvena text-sm my-4 font-medium text-center">{greska}</p>}
+        {greska && (
+          <p className="text-crvena text-sm my-4 font-medium text-center">
+            {greska}
+          </p>
+        )}
 
         <div className="flex flex-col md:flex-row items-center justify-between mt-8 gap-4">
           <Dugme
             naslov={ucitava ? "Registrujem..." : "Registruj se"}
             boja="plava"
             onemoguceno={ucitava}
+            tip="submit"
           />
           <button
             type="button"
