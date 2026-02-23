@@ -1,10 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dugme } from "../../components/Dugme";
 
 export default function KontaktPage() {
   const [forma, setForma] = useState({ ime: "", email: "", poruka: "" });
-  const [status, setStatus] = useState<{ tip: "uspeh" | "greska", tekst: string } | null>(null);
+  const [status, setStatus] = useState<{
+    tip: "uspeh" | "greska";
+    tekst: string;
+  } | null>(null);
 
   const posaljiMejl = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,21 +21,29 @@ export default function KontaktPage() {
       setStatus({ tip: "uspeh", tekst: "Poruka uspešno poslata!" });
       setForma({ ime: "", email: "", poruka: "" });
     } else {
-      setStatus({ tip: "greska", tekst: "Došlo je do greške, pokušajte ponovo." });
+      setStatus({
+        tip: "greska",
+        tekst: "Došlo je do greške, pokušajte ponovo.",
+      });
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-8 space-y-12">
       <section className="text-center space-y-4">
-        <h1 className="text-4xl font-black text-tamno-plava uppercase">Kontaktirajte nas</h1>
-        <p className="text-gray-500 italic">Informacije o radu biblioteke i direktna podrška.</p>
+        <h1 className="text-4xl font-black text-tamno-plava uppercase">
+          Kontaktirajte nas
+        </h1>
+        <p className="text-gray-500 italic">
+          Informacije o radu biblioteke i direktna podrška.
+        </p>
       </section>
 
       <div className="grid md:grid-cols-2 gap-12 bg-white p-10 rounded-[2rem] border-2 border-svetlo-plava shadow-sm">
-    
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-tamno-plava uppercase border-b-2 border-mint pb-2 inline-block">Info</h2>
+          <h2 className="text-xl font-bold text-tamno-plava uppercase border-b-2 border-mint pb-2 inline-block">
+            Info
+          </h2>
           <div className="space-y-4 text-gray-600">
             <p>Adresa: Studentski trg 1, Smederevo</p>
             <p>Telefon: +381 26 123 456</p>
@@ -41,8 +52,10 @@ export default function KontaktPage() {
           </div>
         </div>
 
-        
         <form onSubmit={posaljiMejl} className="space-y-4">
+          <h2 className="text-xl font-bold text-tamno-plava uppercase border-b-2 border-mint pb-2 inline-block">
+            Vaše mišljenje nam je važno.
+          </h2>
           <input
             type="text"
             placeholder="Vaše ime"
@@ -67,9 +80,11 @@ export default function KontaktPage() {
             onChange={(e) => setForma({ ...forma, poruka: e.target.value })}
             required
           />
-          
+
           {status && (
-            <p className={`text-sm font-bold ${status.tip === "uspeh" ? "text-green-600" : "text-red-600"}`}>
+            <p
+              className={`text-sm font-bold ${status.tip === "uspeh" ? "text-green-600" : "text-red-600"}`}
+            >
               {status.tekst}
             </p>
           )}
