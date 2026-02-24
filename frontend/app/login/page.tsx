@@ -53,9 +53,9 @@ export default function LoginPage() {
           placeholder="npr jovan@fon.bg.ac.rs"
         />
         <PoljeZaSifru
-           labela="Lozinka"
-            vrednost={password}
-            promena={setPassword}
+          labela="Lozinka"
+          vrednost={password}
+          promena={setPassword}
         />
         {greska && <p className="text-red-600 text-sm mb-4">{greska}</p>}
         <div className="flex items-center justify-between">
@@ -63,6 +63,7 @@ export default function LoginPage() {
             naslov={ucitava ? "Prijavljujem..." : "Prijavi se"}
             boja="plava"
             onemoguceno={ucitava}
+            tip="submit"
           />
           <button
             type="button"

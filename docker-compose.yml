@@ -14,6 +14,14 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=db
+      - MYSQL_ROOT_PASSWORD=itehhh
 
   backend:
     build: ./server
@@ -22,11 +30,12 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
+
     environment:
       - NODE_ENV=development
       - TZ=Europe/Belgrade
-      - EMAIL_USER=boskovictijana99@gmail.com
-      - EMAIL_PASS=rcdp cedb ptkq jker 
+      - EMAIL_USER=jovanbojanic48@gmail.com
+      - EMAIL_PASS=tqzl yhvn ipnh tqjj
       - DB_HOST=db
       - DB_NAME=citaonica
       - DB_USER=root
@@ -34,7 +43,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
 
   scraper:
     image: python:3.9
