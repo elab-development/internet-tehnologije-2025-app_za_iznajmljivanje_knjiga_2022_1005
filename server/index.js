@@ -7,6 +7,10 @@ const loginRoutes = require("./routes/loginRoutes");
 const korisniciRoutes = require("./routes/korisniciRoutes");
 const auth = require("./middleware/authMiddleware");
 const istrazi = require("./eksterni/istrazi");
+const citati = require("./eksterni/citati");
+const helmet = require("helmet");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
 
 const nodemailer = require("nodemailer");
 const { Zaduzenje, Publikacija, Korisnik } = require("./models");
@@ -19,6 +23,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const app = express();
+const lokalniKes = {};
 
 app.use("/api/zaduzenja", require("./routes/zaduzenjaRoutes"));
 app.use("/api/publikacije", publikacijaRoutes);
@@ -26,6 +31,8 @@ app.use("/api/login", loginRoutes);
 app.use("/api/registracija", require("./routes/registracijaRoutes"));
 app.use("/api/korisnici", korisniciRoutes);
 app.use("/api/eksterni", istrazi);
+app.use("/api/citati", citati);
+app.use("/api/publikacije", publikacijaRoutes);
 const db = require("./models");
 
 const corsOptions = {
@@ -57,7 +64,7 @@ app.post("/api/kontakt", async (req, res) => {
 
 app.get("/api/me", auth, async (req, res) => {
   try {
-    const { id, uloga, isAdmin } = req.user;
+    const { id, uloga } = req.user;
     if (uloga === "student") {
       const student = await db.Student.findByPk(id, {
         attributes: ["id", "ime", "prezime", "email", "brojIndeksa"],
@@ -98,10 +105,8 @@ app.get("/api/me", auth, async (req, res) => {
 
 app.get("/api/moje-knjige", auth, async (req, res) => {
   try {
-    const korisnikId = req.user.id;
-
     const zaduzenja = await db.Zaduzenje.findAll({
-      where: { studentId: korisnikId },
+      where: { studentId: req.user.id },
       include: [
         {
           model: db.Publikacija,
@@ -110,29 +115,22 @@ app.get("/api/moje-knjige", auth, async (req, res) => {
         },
       ],
     });
-
     const rezultati = zaduzenja.map((z) => {
       const datumUzimanja = new Date(
         z.vreme_zaduzivanja || z.datumZaduzenja || Date.now(),
       );
-
       const izracunatRok = new Date(datumUzimanja);
       izracunatRok.setDate(izracunatRok.getDate() + 30);
-
       return {
-        id: z.rbKnjiga || z.id,
-        naziv: z.publikacija ? z.publikacija.naziv : "Nepoznato",
-        autor: z.publikacija ? z.publikacija.autor : "Nepoznato",
-
+        id: z.id,
+        naziv: z.publikacija?.naziv || "Nepoznato",
+        autor: z.publikacija?.autor || "Nepoznato",
         rok: izracunatRok.toLocaleDateString("sr-RS"),
-        rawRok: izracunatRok.toISOString(),
         status: z.status || "Aktivno",
       };
     });
-
     res.json(rezultati);
   } catch (error) {
-    console.error("Greška na backendu:", error);
     res
       .status(500)
       .json({ message: "Greška na serveru", error: error.message });
@@ -166,24 +164,16 @@ app.post("/api/zaduzi-knjigu", async (req, res) => {
       });
     }
     const knjiga = await db.Publikacija.findByPk(publikacijaId);
-    if (!knjiga || knjiga.stanje <= 0) {
+    if (!knjiga || knjiga.stanje <= 0)
       return res
         .status(400)
         .json({ message: "Knjiga trenutno nije na stanju." });
-    }
-
-    const danas = new Date();
-    const rok = new Date();
-    rok.setDate(danas.getDate() + 30);
-
     await db.Zaduzenje.create({
       studentId: student.id,
-      publikacijaId: publikacijaId,
-      datumZaduzenja: danas,
-      datumVracanja: rok,
+      publikacijaId,
+      datumZaduzenja: new Date(),
       status: "Aktivno",
     });
-
     await knjiga.decrement("stanje", { by: 1 });
 
     const mailOptions = {
@@ -210,18 +200,12 @@ app.post("/api/zaduzi-knjigu", async (req, res) => {
 app.put("/api/razduzi/:id", auth, async (req, res) => {
   try {
     const zaduzenje = await db.Zaduzenje.findByPk(req.params.id);
-    if (!zaduzenje) {
+    if (!zaduzenje)
       return res.status(404).json({ message: "Zaduženje nije nađeno" });
-    }
-
     zaduzenje.status = "Vraćeno";
     await zaduzenje.save();
-
     const knjiga = await db.Publikacija.findByPk(zaduzenje.publikacijaId);
-    if (knjiga) {
-      await knjiga.increment("stanje", { by: 1 });
-    }
-
+    if (knjiga) await knjiga.increment("stanje", { by: 1 });
     res.json({ message: "Knjiga uspešno vraćena!" });
   } catch (error) {
     res

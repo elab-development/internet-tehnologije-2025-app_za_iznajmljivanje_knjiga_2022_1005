@@ -290,15 +290,16 @@ export default function ProfilPage() {
               Trenutna zaduženja
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {zaduzenja
-                .filter((z) => z.status !== "Vraćeno")
-                .map((z) => (
-                  <ZaduzenjeKartica
-                    key={z.id}
-                    naziv={z.Publikacija?.naziv || z.publikacija?.naziv}
-                    rok={z.datumVracanja}
-                  />
-                ))}
+    {zaduzenja
+  .filter((z) => z.status === "Aktivno") 
+  
+  .map((z) => (
+    <ZaduzenjeKartica
+      key={z.id}
+      naziv={z.naziv}
+      rok={z.rok}
+    />
+  ))}
               {zaduzenja.filter((z) => z.status !== "Vraćeno").length === 0 && (
                 <p className="text-gray-400 italic px-2">
                   Trenutno nemate aktivnih zaduženja.
@@ -312,17 +313,15 @@ export default function ProfilPage() {
               Istorija (Vraćene knjige)
             </h2>
             <div className="grid md:grid-cols-2 gap-4 opacity-80">
-              {zaduzenja
-                .filter((z) => z.status === "Vraćeno")
-                .map((z) => (
-                  <ZaduzenjeKartica
-                    key={z.id}
-                    naziv={
-                      z.Publikacija?.naziv || z.publikacija?.naziv || "Knjiga"
-                    }
-                    rok={"KNJIGA JE USPEŠNO VRAĆENA."}
-                  />
-                ))}
+      {zaduzenja
+  .filter((z) => z.status === "Vraćeno") // Prikazuje samo one koje su vraćene
+  .map((z) => (
+    <ZaduzenjeKartica
+      key={z.id}
+      naziv={z.naziv}
+      rok="KNJIGA JE USPEŠNO VRAĆENA."
+    />
+  ))}
             </div>
           </section>
 

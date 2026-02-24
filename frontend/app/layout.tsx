@@ -42,11 +42,11 @@ export default function RootLayout({
   return (
     <html lang="sr">
       <body className="min-h-screen bg-gradient-to-b from-mint/15 via-zuta/5 to-svetlo-plava/20 text-tamno-plava antialiased font-sans">
-        <nav className="bg-white/90 backdrop-blur border-b-2 border-mint/40 px-6 py-4 flex justify-between items-center shadow-sm">
+        <nav className="bg-white/90 backdrop-blur border-b-2 border-mint/40 px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-50">
           <div className="flex gap-8 items-center">
             <Link
               href="/"
-              className="text-base font-bold uppercase tracking-tight text-tamno-plava hover:text-tamno-plava/90 transition-colors"
+              className={`text-base font-bold uppercase tracking-tight transition-colors ${pathname === "/" ? "text-mint" : "text-tamno-plava hover:text-mint"}`}
             >
               KATALOG
             </Link>
@@ -59,7 +59,10 @@ export default function RootLayout({
                 >
                   Moj Profil
                 </Link>
-                <Link href="/kontakt" className="font-bold uppercase text-tamno-plava hover:text-mint transition-colors">
+                <Link 
+                  href="/kontakt" 
+                  className={`text-base font-bold uppercase tracking-tight ${pathname === "/kontakt" ? "text-mint" : "text-tamno-plava hover:text-mint"}`}
+                >
                   Kontakt
                 </Link>
                 
@@ -85,6 +88,16 @@ export default function RootLayout({
               </Link>
             ) : (
               <div className="flex items-center gap-6">
+                {/* DODATO: Prikaz imena korisnika sa malim krugom (avatarom) */}
+                <div className="hidden md:flex items-center gap-2 border-r-2 border-gray-100 pr-6">
+                   <div className="w-8 h-8 bg-mint/20 rounded-full flex items-center justify-center text-xs font-bold text-tamno-plava border border-mint/40">
+                      {korisnik.ime?.charAt(0).toUpperCase()}
+                   </div>
+                   <span className="text-sm font-bold text-gray-700">
+                      {korisnik.ime} {korisnik.prezime}
+                   </span>
+                </div>
+
                 <button
                   onClick={odjaviSe}
                   className="text-base font-bold uppercase tracking-tight text-crvena hover:text-crvena/80 transition-colors"
