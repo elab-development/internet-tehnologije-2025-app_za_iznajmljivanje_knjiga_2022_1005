@@ -14,14 +14,11 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER, // vukbojanic000@gmail.com
-    pass: process.env.EMAIL_PASS, //s
+    pass: process.env.EMAIL_PASS, //
   },
 });
 
 const app = express();
-
-app.use(cors());
-app.use(express.json());
 
 app.use("/api/zaduzenja", require("./routes/zaduzenjaRoutes"));
 app.use("/api/publikacije", publikacijaRoutes);
@@ -30,6 +27,15 @@ app.use("/api/registracija", require("./routes/registracijaRoutes"));
 app.use("/api/korisnici", korisniciRoutes);
 app.use("/api/eksterni", istrazi);
 const db = require("./models");
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
+app.use(express.json());
 
 app.post("/api/kontakt", async (req, res) => {
   const { ime, email, poruka } = req.body;
