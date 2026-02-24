@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@react-google-maps/api": "^2.20.8",
+    "@vis.gl/react-google-maps": "^1.7.1"
+  },
+  "devDependencies": {
+    "@types/google.maps": "^3.58.1"
+  }
+}

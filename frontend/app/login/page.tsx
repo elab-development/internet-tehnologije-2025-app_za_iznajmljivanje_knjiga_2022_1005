@@ -63,6 +63,7 @@ export default function LoginPage() {
             naslov={ucitava ? "Prijavljujem..." : "Prijavi se"}
             boja="plava"
             onemoguceno={ucitava}
+            tip="submit"
           />
           <button
             type="button"
