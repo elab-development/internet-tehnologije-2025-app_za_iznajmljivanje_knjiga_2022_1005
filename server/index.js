@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER, // vukbojanic000@gmail.com
-    pass: process.env.EMAIL_PASS, // Vuklego235!
+    pass: process.env.EMAIL_PASS, //s
   },
 });
 
@@ -37,7 +37,7 @@ app.post("/api/kontakt", async (req, res) => {
   const mailOptions = {
     from: email,
     to: process.env.EMAIL_USER,
-    subject: `Kontakt forma: Poruka od ${ime}`,
+    subject: `Kontakt forma: Poruka  stigla od ${ime}`,
     text: `Dobili ste novu poruku sa kontakt forme:\n\nIme: ${ime}\nEmail: ${email}\n\nPoruka:\n${poruka}`,
   };
 
