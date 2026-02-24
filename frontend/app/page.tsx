@@ -12,18 +12,33 @@ interface Citat {
 
 
 const CitatDana = () => {
-  const [citati, setCitati] = useState<Citat[]>([]);
+  const [citati, setCitati] = useState<any[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Fetch podataka
   useEffect(() => {
     const ucitaj = async () => {
       try {
+        // 1. Prvo proveri da li već imamo citate u memoriji (LocalStorage)
+        const sacuvaniCitati = localStorage.getItem("moji_citati");
+        if (sacuvaniCitati) {
+          const parsed = JSON.parse(sacuvaniCitati);
+          if (parsed.length > 0) {
+            setCitati(parsed);
+            setLoading(false);
+            return; // Prekidamo, nema potrebe da mučimo API
+          }
+        }
+
+        // 2. Ako nemamo u memoriji, tek onda vuci sa servera
         const res = await fetch("http://localhost:5000/api/citati");
         const data = await res.json();
-        console.log("Podaci stigli sa API-ja:", data);
-        setCitati(Array.isArray(data) ? data : [data]);
+        
+        if (Array.isArray(data) && data.length > 0 && data[0].tekst) {
+          setCitati(data);
+          // 3. Sačuvaj ih u LocalStorage za sledeći put
+          localStorage.setItem("moji_citati", JSON.stringify(data));
+        }
       } catch (err) {
         console.error("Greška API:", err);
       } finally {
@@ -33,69 +48,43 @@ const CitatDana = () => {
     ucitaj();
   }, []);
 
-  // FUNKCIJE ZA LISTANJE - Koristimo useCallback da bi uvek imale sveže podatke
   const sledeci = useCallback(() => {
     if (citati.length === 0) return;
-    console.log("Kliknuto DESNO. Trenutni index:", index);
     setIndex((prev) => (prev + 1) % citati.length);
-  }, [citati.length, index]);
+  }, [citati.length]);
 
   const prethodni = useCallback(() => {
     if (citati.length === 0) return;
-    console.log("Kliknuto LEVO. Trenutni index:", index);
     setIndex((prev) => (prev - 1 + citati.length) % citati.length);
-  }, [citati.length, index]);
+  }, [citati.length]);
 
-  if (loading) return <div className="text-center p-6 text-gray-400 italic font-serif">Učitavanje citata...</div>;
-  if (citati.length === 0) return null;
+  // KLJUČNO: Ako nema podataka ili se učitava, ne crtaj ništa (neće biti praznih navodnika)
+  if (loading || citati.length === 0 || !citati[index]?.tekst) return null;
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto overflow-hidden bg-white/40 backdrop-blur-md border border-white/40 p-8 rounded-3xl shadow-lg my-8 group">
-      
-      {/* Dugmići sa FIX-ovanom pozicijom i Z-INDEXOM */}
-      <button 
-        type="button"
-        onClick={(e) => { e.preventDefault(); prethodni(); }}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-[999] p-3 rounded-full bg-white/90 shadow-md text-pink-500 hover:scale-110 active:scale-95 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
-      >
+    <div className="relative w-full max-w-2xl mx-auto bg-white/60 backdrop-blur-md border border-white p-8 rounded-[2.5rem] shadow-xl my-12 group overflow-hidden">
+      <button onClick={prethodni} className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-lg text-pink-500 hidden sm:block">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </button>
 
-      <button 
-        type="button"
-        onClick={(e) => { e.preventDefault(); sledeci(); }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-[999] p-3 rounded-full bg-white/90 shadow-md text-pink-500 hover:scale-110 active:scale-95 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
-      >
+      <button onClick={sledeci} className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-lg text-pink-500 hidden sm:block">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
       </button>
 
-      {/* KONTEJNER KOJI SE POMERA */}
-      <div 
-  className="flex flex-nowrap transition-transform duration-700 ease-in-out" 
-  style={{ 
-    transform: `translateX(-${index * 100}%)`,
-    width: `${citati.length * 100}%` // Celokupna širina niza
-  }}
->
-  {citati.map((c, i) => (
-    <div 
-      key={i} 
-      className="flex-shrink-0 text-center px-12"
-      style={{ width: `${100 / citati.length}%` }} // Svaki citat zauzima tačno 1/5 (ako ih ima 5)
-    >
-      <p className="text-lg italic font-serif text-slate-700 mb-4">"{c.tekst}"</p>
-      <span className="text-roze font-bold tracking-widest text-xs">— {c.autor}</span>
-    </div>
-  ))}
-</div>
-      {/* Tačkice */}
-      <div className="flex justify-center gap-2 mt-6 relative z-[999]">
+      <div className="flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${index * 100}%)` }}>
+        {citati.map((c, i) => (
+          <div key={i} className="w-full flex-shrink-0 px-12 text-center">
+            <p className="text-xl md:text-2xl italic font-serif text-slate-800 leading-relaxed mb-4">
+              "{c.tekst}"
+            </p>
+            <span className="text-pink-500 font-bold tracking-widest text-sm uppercase">— {c.autor}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-center gap-3 mt-8">
         {citati.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setIndex(i)}
-            className={`h-2 rounded-full transition-all ${i === index ? "w-6 bg-pink-400" : "w-2 bg-gray-300"}`}
-          />
+          <button key={i} onClick={() => setIndex(i)} className={`h-2.5 rounded-full transition-all ${i === index ? "w-8 bg-pink-500" : "w-2.5 bg-pink-200"}`} />
         ))}
       </div>
     </div>
@@ -201,7 +190,7 @@ export default function KatalogPage() {
       </div>
 
       {/* NOVI CITAT DANA */}
-      <CitatDana />
+      <CitatDana key={korisnik?.email || "gost"} />
 
       <div className="mb-10">
         <Polje labela="Pretraga" placeholder="Unesite naziv ili autora..." vrednost={pretraga} promena={setPretraga} />
