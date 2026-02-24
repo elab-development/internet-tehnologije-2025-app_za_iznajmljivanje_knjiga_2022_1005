@@ -44,7 +44,7 @@ jobs:
       - name: Build Frontend
         run: |
           cd frontend
-          npm run build
+          npm run build -- --webpack
 
       
       - name: Automatski Deployment na Cloud
