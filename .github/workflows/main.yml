@@ -17,16 +17,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Instalacija zavisnosti (Backend)
         run: |
-          cd backend
+          cd server
           npm install
 
       - name: Build Backend
         run: |
-          cd backend
+          cd server
           npm run build --if-present
 
       - name: Instalacija zavisnosti (Frontend)
@@ -37,4 +37,4 @@ jobs:
       - name: Build Frontend
         run: |
           cd frontend
-          npm run build
+          npm run build -- --webpack

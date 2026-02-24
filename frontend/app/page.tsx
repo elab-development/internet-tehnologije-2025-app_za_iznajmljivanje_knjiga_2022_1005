@@ -1,9 +1,106 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect,useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Dugme } from "../components/Dugme";
 import { Polje } from "../components/Polje";
 
+interface Citat {
+  tekst: string;
+  autor: string;
+}
+
+
+const CitatDana = () => {
+  const [citati, setCitati] = useState<Citat[]>([]);
+  const [index, setIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch podataka
+  useEffect(() => {
+    const ucitaj = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/citati");
+        const data = await res.json();
+        console.log("Podaci stigli sa API-ja:", data);
+        setCitati(Array.isArray(data) ? data : [data]);
+      } catch (err) {
+        console.error("Greška API:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    ucitaj();
+  }, []);
+
+  // FUNKCIJE ZA LISTANJE - Koristimo useCallback da bi uvek imale sveže podatke
+  const sledeci = useCallback(() => {
+    if (citati.length === 0) return;
+    console.log("Kliknuto DESNO. Trenutni index:", index);
+    setIndex((prev) => (prev + 1) % citati.length);
+  }, [citati.length, index]);
+
+  const prethodni = useCallback(() => {
+    if (citati.length === 0) return;
+    console.log("Kliknuto LEVO. Trenutni index:", index);
+    setIndex((prev) => (prev - 1 + citati.length) % citati.length);
+  }, [citati.length, index]);
+
+  if (loading) return <div className="text-center p-6 text-gray-400 italic font-serif">Učitavanje citata...</div>;
+  if (citati.length === 0) return null;
+
+  return (
+    <div className="relative w-full max-w-2xl mx-auto overflow-hidden bg-white/40 backdrop-blur-md border border-white/40 p-8 rounded-3xl shadow-lg my-8 group">
+      
+      {/* Dugmići sa FIX-ovanom pozicijom i Z-INDEXOM */}
+      <button 
+        type="button"
+        onClick={(e) => { e.preventDefault(); prethodni(); }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-[999] p-3 rounded-full bg-white/90 shadow-md text-pink-500 hover:scale-110 active:scale-95 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+
+      <button 
+        type="button"
+        onClick={(e) => { e.preventDefault(); sledeci(); }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-[999] p-3 rounded-full bg-white/90 shadow-md text-pink-500 hover:scale-110 active:scale-95 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+
+      {/* KONTEJNER KOJI SE POMERA */}
+      <div 
+  className="flex flex-nowrap transition-transform duration-700 ease-in-out" 
+  style={{ 
+    transform: `translateX(-${index * 100}%)`,
+    width: `${citati.length * 100}%` // Celokupna širina niza
+  }}
+>
+  {citati.map((c, i) => (
+    <div 
+      key={i} 
+      className="flex-shrink-0 text-center px-12"
+      style={{ width: `${100 / citati.length}%` }} // Svaki citat zauzima tačno 1/5 (ako ih ima 5)
+    >
+      <p className="text-lg italic font-serif text-slate-700 mb-4">"{c.tekst}"</p>
+      <span className="text-roze font-bold tracking-widest text-xs">— {c.autor}</span>
+    </div>
+  ))}
+</div>
+      {/* Tačkice */}
+      <div className="flex justify-center gap-2 mt-6 relative z-[999]">
+        {citati.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIndex(i)}
+            className={`h-2 rounded-full transition-all ${i === index ? "w-6 bg-pink-400" : "w-2 bg-gray-300"}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 export default function KatalogPage() {
   const [publikacije, setPublikacije] = useState<any[]>([]);
   const [korisnik, setKorisnik] = useState<any>(null);
@@ -11,9 +108,7 @@ export default function KatalogPage() {
   const [pretraga, setPretraga] = useState("");
   const router = useRouter();
   const [modalOtvoren, setModalOtvoren] = useState(false);
-  const [selektovanaPublikacijaId, setSelektovanaPublikacijaId] = useState<
-    number | null
-  >(null);
+  const [selektovanaPublikacijaId, setSelektovanaPublikacijaId] = useState<number | null>(null);
   const [indeks, setIndeks] = useState("");
   const [feedback, setFeedback] = useState<{
     poruka: string;
@@ -39,9 +134,7 @@ export default function KatalogPage() {
 
   const obrisiPublikaciju = async (id: number) => {
     if (!confirm("Obrisati?")) return;
-    const res = await fetch(`http://localhost:5000/api/publikacije/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(`http://localhost:5000/api/publikacije/${id}`, { method: "DELETE" });
     if (res.ok) setPublikacije((prev) => prev.filter((p) => p.id !== id));
   };
 
@@ -90,38 +183,28 @@ export default function KatalogPage() {
   const filtrirane = publikacije.filter(
     (p) =>
       p.naziv?.toLowerCase().includes(pretraga.toLowerCase()) ||
-      p.autor?.toLowerCase().includes(pretraga.toLowerCase()),
+      p.autor?.toLowerCase().includes(pretraga.toLowerCase())
   );
 
   if (ucitavanje)
     return (
       <div className="p-10 text-center font-bold text-tamno-plava">
-        Učitavanje...
+        Učitavanje kataloga...
       </div>
     );
 
   return (
     <div className="py-6 px-4 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-black text-tamno-plava uppercase tracking-tight">
-          Katalog
-        </h1>
-        {isAdmin && (
-          <Dugme
-            naslov="+ Nova publikacija"
-            boja="zelena"
-            klik={() => router.push("/dodaj-publikaciju")}
-          />
-        )}
+        <h1 className="text-3xl font-black text-tamno-plava uppercase tracking-tight">Katalog</h1>
+        {isAdmin && <Dugme naslov="+ Nova publikacija" boja="zelena" klik={() => router.push("/dodaj-publikaciju")} />}
       </div>
 
+      {/* NOVI CITAT DANA */}
+      <CitatDana />
+
       <div className="mb-10">
-        <Polje
-          labela="Pretraga"
-          placeholder="Unesite naziv ili autora..."
-          vrednost={pretraga}
-          promena={setPretraga}
-        />
+        <Polje labela="Pretraga" placeholder="Unesite naziv ili autora..." vrednost={pretraga} promena={setPretraga} />
       </div>
 
       {filtrirane.length === 0 ? (
@@ -131,7 +214,7 @@ export default function KatalogPage() {
           {filtrirane.map((p) => (
             <div
               key={p.id}
-              className="p-6 bg-white border-2 border-svetlo-plava rounded-2xl shadow-sm space-y-4"
+              className="p-6 bg-white border-2 border-svetlo-plava rounded-2xl shadow-sm space-y-4 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start">
                 <div className="max-w-[70%]">
@@ -141,7 +224,7 @@ export default function KatalogPage() {
                   <p className="text-sm text-gray-500 italic">{p.autor}</p>
                 </div>
                 <span
-                  className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.stanje > 0 ? "bg-zuta/40 text-tamno-plava" : "bg-crvena/25 text-tamno-plava"}`}
+                  className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.stanje > 0 ? "bg-zuta/40 text-tamno-plava" : "bg-red-200 text-red-700"}`}
                 >
                   Dostupno: {p.stanje}
                 </span>
@@ -175,11 +258,13 @@ export default function KatalogPage() {
           ))}
         </div>
       )}
+
+      {/* MODAL ZA ZADUŽIVANJE */}
       {modalOtvoren && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div
             className={`bg-white w-full max-w-md p-8 rounded-[2rem] border-2 border-svetlo-plava shadow-2xl space-y-6 animate-in zoom-in-95 duration-200 
-    ${mrdni ? "animacija-skok" : ""}`}
+            ${mrdni ? "animacija-skok" : ""}`}
           >
             <h2 className="text-xl font-black text-tamno-plava uppercase">
               Zaduživanje knjige
