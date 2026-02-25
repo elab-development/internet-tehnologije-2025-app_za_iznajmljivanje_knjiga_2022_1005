@@ -150,14 +150,17 @@ export default function ProfilPage() {
     return brojIndeksa.includes(pretragaIndeksa.toLowerCase());
   });
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-12">
-      <section className="bg-white rounded-[2rem] border-2 border-mint/60 p-8 flex items-center gap-8 shadow-sm">
-        <div className="w-24 h-24 bg-gradient-to-tr from-mint to-roze text-white rounded-full flex items-center justify-center text-3xl font-black uppercase shadow-inner">
+    <div className="min-h-[calc(100vh-80px)] px-4 py-8 md:px-8 max-w-6xl mx-auto space-y-12 bg-gradient-to-b from-svetlo-plava/10 via-white to-white">
+      <section className="bg-white/80 backdrop-blur-sm rounded-[2rem] border border-mint/50 p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 shadow-lg">
+        <div className="w-24 h-24 bg-gradient-to-tr from-mint to-roze text-white rounded-full flex items-center justify-center text-3xl font-black uppercase shadow-inner ring-4 ring-svetlo-plava/40">
           {korisnik.ime?.[0]}
           {korisnik.prezime?.[0]}
         </div>
-        <div className="space-y-1">
-          <h1 className="text-3xl font-black uppercase tracking-tight text-tamno-plava">
+        <div className="space-y-2 text-center md:text-left">
+          <p className="text-[11px] font-black tracking-[0.3em] uppercase text-mint">
+            Moj profil
+          </p>
+          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-tamno-plava">
             {korisnik.ime} {korisnik.prezime}
           </h1>
           <p className="text-gray-600 font-medium">E-mail: {korisnik.email}</p>
@@ -179,11 +182,14 @@ export default function ProfilPage() {
         </div>
       </section>
 
-      {isAdmin && (
+        {isAdmin && (
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-roze px-2">
-              Upravljanje Studentima
+            <h2 className="flex items-center justify-between text-xs font-black uppercase tracking-[0.2em] text-roze px-2">
+              <span>Upravljanje Studentima</span>
+              <span className="ml-4 px-2 py-0.5 rounded-full bg-roze/10 text-[9px] tracking-[0.15em]">
+                {studenti.length}
+              </span>
             </h2>
             <div className="bg-white rounded-[2rem] border-2 border-mint/50 overflow-hidden shadow-sm">
               {studenti.map((s) => (
@@ -204,8 +210,11 @@ export default function ProfilPage() {
             </div>
           </div>
           <div className="space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-roze px-2">
-              Upravljanje Službenicima
+            <h2 className="flex items-center justify-between text-xs font-black uppercase tracking-[0.2em] text-roze px-2">
+              <span>Upravljanje Službenicima</span>
+              <span className="ml-4 px-2 py-0.5 rounded-full bg-roze/10 text-[9px] tracking-[0.15em]">
+                {sluzbenici.length}
+              </span>
             </h2>
             <div className="bg-white rounded-[2rem] border-2 border-mint/50 overflow-hidden shadow-sm">
               {sluzbenici.map((sl) => (
@@ -231,8 +240,11 @@ export default function ProfilPage() {
       {jeSluzbenik && (
         <section className="space-y-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-2">
-            <h2 className="text-xl font-black uppercase tracking-tight text-tamno-plava">
-              Trenutna zaduženja ({filtriranaZaduzenja.length})
+            <h2 className="flex items-center gap-2 text-xl font-black uppercase tracking-tight text-tamno-plava">
+              <span>Trenutna zaduženja</span>
+              <span className="px-2 py-0.5 rounded-full bg-mint/10 text-xs text-mint tracking-widest">
+                {filtriranaZaduzenja.length}
+              </span>
             </h2>
 
             {/* Polje za filter po indeksu */}
@@ -284,52 +296,56 @@ export default function ProfilPage() {
       )}
 
       {korisnik.uloga === "student" && (
-        <>
-          <section className="space-y-6">
-            <h2 className="text-xl font-black uppercase tracking-tight text-roze px-2">
-              Trenutna zaduženja
+        <section className="space-y-10 bg-white/80 backdrop-blur-sm rounded-[2rem] border border-svetlo-plava shadow-md p-6 md:p-8">
+          <div className="space-y-6">
+            <h2 className="flex items-center gap-2 text-xl font-black uppercase tracking-tight text-roze px-2">
+              <span>Trenutna zaduženja</span>
+              <span className="px-2 py-0.5 rounded-full bg-roze/10 text-xs tracking-widest">
+                {zaduzenja.filter((z) => z.status === "Aktivno").length}
+              </span>
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
-    {zaduzenja
-  .filter((z) => z.status === "Aktivno") 
-  
-  .map((z) => (
-    <ZaduzenjeKartica
-      key={z.id}
-      naziv={z.naziv}
-      rok={z.rok}
-    />
-  ))}
+              {zaduzenja
+                .filter((z) => z.status === "Aktivno")
+                .map((z) => (
+                  <ZaduzenjeKartica key={z.id} naziv={z.naziv} rok={z.rok} />
+                ))}
               {zaduzenja.filter((z) => z.status !== "Vraćeno").length === 0 && (
                 <p className="text-gray-400 italic px-2">
                   Trenutno nemate aktivnih zaduženja.
                 </p>
               )}
             </div>
-          </section>
+          </div>
 
-          <section className="space-y-6 mt-10">
+          <div className="space-y-6 border-t border-svetlo-plava/40 pt-6">
             <h2 className="text-xl font-black uppercase tracking-tight text-gray-400 px-2 flex items-center gap-2">
-              Istorija (Vraćene knjige)
+              <span>Istorija (Vraćene knjige)</span>
+              <span className="px-2 py-0.5 rounded-full bg-gray-100 text-[11px] tracking-widest text-gray-500">
+                {zaduzenja.filter((z) => z.status === "Vraćeno").length}
+              </span>
             </h2>
             <div className="grid md:grid-cols-2 gap-4 opacity-80">
-      {zaduzenja
-  .filter((z) => z.status === "Vraćeno") // Prikazuje samo one koje su vraćene
-  .map((z) => (
-    <ZaduzenjeKartica
-      key={z.id}
-      naziv={z.naziv}
-      rok="KNJIGA JE USPEŠNO VRAĆENA."
-    />
-  ))}
+              {zaduzenja
+                .filter((z) => z.status === "Vraćeno")
+                .map((z) => (
+                  <ZaduzenjeKartica
+                    key={z.id}
+                    naziv={z.naziv}
+                    rok="KNJIGA JE USPEŠNO VRAĆENA."
+                  />
+                ))}
             </div>
-          </section>
+          </div>
 
-          <section className="space-y-6">
-            <h2 className="text-xl font-black uppercase tracking-tight text-tamno-plava px-2">
-              Pretraži nepoznati pojam na Vikipediji
+          <div className="space-y-6 border-t border-svetlo-plava/40 pt-6">
+            <h2 className="flex items-center justify-between text-xl font-black uppercase tracking-tight text-tamno-plava px-2">
+              <span>Pretraži nepoznati pojam na Vikipediji</span>
+              <span className="text-[10px] px-3 py-1 rounded-full bg-mint/10 text-mint tracking-[0.25em] uppercase">
+                Wiki pomoć
+              </span>
             </h2>
-            <div className="bg-white rounded-[2rem] border-2 border-svetlo-plava p-6 shadow-sm">
+            <div className="bg-white rounded-[1.75rem] border-2 border-svetlo-plava/80 p-6 shadow-sm">
               <div className="flex gap-4">
                 <input
                   type="text"
@@ -364,8 +380,8 @@ export default function ProfilPage() {
                 </div>
               )}
             </div>
-          </section>
-        </>
+          </div>
+        </section>
       )}
     </div>
   );

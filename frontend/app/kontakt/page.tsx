@@ -135,9 +135,9 @@ export default function KontaktPage() {
                 onClick={() => setSelektovanaLib(lib)}
               >
                 <Pin 
-                  background={'#4FD1C5'} 
+                  background={'#F97373'} 
                   glyphColor={'#ffffff'} 
-                  borderColor={'#2c7a7b'} 
+                  borderColor={'#B91C1C'} 
                 />
               </AdvancedMarker>
             ))}

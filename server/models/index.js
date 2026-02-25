@@ -16,6 +16,7 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+// Ova petlja automatski učitava sve fajlove iz models foldera
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -31,25 +32,15 @@ fs
     db[model.name] = model;
   });
 
+// Ova petlja aktivira "static associate" funkcije koje si mi poslala u kodu
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
-
-
-db.Kategorija.hasMany(db.Publikacija, { 
-    foreignKey: 'kategorijaId' 
-    
-});
-
-db.Zaduzenje.belongsTo(db.Publikacija, { foreignKey: 'publikacijaId' });
-
-db.Publikacija.belongsTo(db.Kategorija, { 
-    foreignKey: 'kategorijaId', 
-    as: 'Kategorija'
-});
+// OVDE NE SME BITI NIŠTA VIŠE (nikakvi db.Zaduzenje.belongsTo...)
+// jer bi to napravilo dupli alias i izazvalo AssociationError.
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

@@ -1,36 +1,31 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Publikacija extends Model {
-   
-   static associate(models) {
-
-  Publikacija.belongsTo(models.Kategorija, {
-    foreignKey: 'kategorijaId',
-    as: 'kategorija'
-  });
-  Publikacija.hasMany(models.Zaduzenje, {
+    static associate(models) {
+     
+      Publikacija.hasMany(models.Zaduzenje, {
         foreignKey: 'publikacijaId',
         as: 'zaduzenja'
       });
-  
-
-}
+    }
   }
+
   Publikacija.init({
     naziv: DataTypes.STRING,
     isbn: DataTypes.STRING,
     autor: DataTypes.STRING,
     stanje: DataTypes.INTEGER,
-    kategorijaId: DataTypes.INTEGER
+    
+    slika_url: DataTypes.STRING 
+   
   }, {
-  sequelize,
-  freezeTableName: true,   
-  tableName: 'Publikacijas', 
-  
-  timestamps: false
+    sequelize,
+    freezeTableName: true,
+    tableName: 'Publikacijas',
+    timestamps: false
   });
+
   return Publikacija;
 };

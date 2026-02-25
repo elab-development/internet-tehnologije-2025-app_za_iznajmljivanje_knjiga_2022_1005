@@ -1,15 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-// 1. POPRAVKA ZA FETCH (Rešava "ReferenceError: fetch is not defined")
-// Pravimo lažni fetch koji vraća prazan niz podataka kako test ne bi pukao
 global.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve([]),
   })
 ) as jest.Mock;
 
-// 2. POPRAVKA ZA ROUTER
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -20,7 +17,7 @@ jest.mock('next/navigation', () => ({
   usePathname: () => '/',
 }));
 
-// 3. MOCK ZA MAPE
+
 jest.mock('@vis.gl/react-google-maps', () => ({
   APIProvider: ({ children }: any) => <div>{children}</div>,
   Map: ({ children }: any) => <div data-testid="mapa">{children}</div>,
@@ -50,8 +47,7 @@ describe('Automatizovana provera svih stranica projekta', () => {
 
   test('3. Login stranica postoji', () => {
     render(<Login />);
-    // Tražimo specifično dugme koje sadrži tekst "Prijavi se" 
-    // kako bismo izbegli grešku "multiple elements found"
+  
     expect(screen.getByRole('button', { name: /Prijavi se/i })).toBeInTheDocument();
   });
 

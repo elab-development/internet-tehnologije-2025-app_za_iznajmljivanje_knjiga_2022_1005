@@ -1,99 +1,101 @@
 import requests
-from bs4 import BeautifulSoup
 import mysql.connector
 import time
 
+# Host je "db" za Docker
+DB_CONFIG = {
+    "host": "db", 
+    "user": "root",
+    "password": "itehhh",
+    "database": "citaonica",
+    "port": 3306 
+}
 
-BAZA = "citaonica"
-USER = "root"
-PASSWORD = "itehhh"  
-HOST = "127.0.0.1"  
-HOST = "db"  
-PORT = 3306
+def fetch_more_serbian_books():
+    try:
+        db = mysql.connector.connect(**DB_CONFIG)
+        cursor = db.cursor()
+        
+        # Proširena lista pojmova na srpskom (opšte teme)
+        queries = [
+            'književnost', 'istorija', 'psihologija', 
+            'nauka', 'beograd', 'filozofija', 
+            'umetnost', 'zbirka', 'roman'
+        ]
+        
+        total_uvezeno = 0
 
-QUERY = "cetvrti-razred-srednje-skole-oblast-88-grupa-120"
-
-URL = f"https://www.korisnaknjiga.com/{QUERY}"
-
-try:
-    db = mysql.connector.connect(
-        host=HOST, user=USER, password=PASSWORD, database=BAZA, port=PORT
-    )
-    cursor = db.cursor()
-    
-    cursor.execute("INSERT IGNORE INTO Kategorijas (id, naziv) VALUES (1, 'Opšta')")
-    db.commit()
-    brojac=0
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(URL, headers=headers)
-    print(response.status_code)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-        book_items = [a.parent.parent for a in soup.select('.Snaslov')]
-        print(f"Pronađeno elemenata: {len(book_items)}")
-        uvezeno = 0
-        for item in book_items:
-            if brojac % 2 ==0:
-                try:
-                    naslov_tag = item.select_one('.Snaslov')
-                    if not naslov_tag:
-                        continue
-                    naslov = naslov_tag.get_text(strip=True)
-
-                    a_tag = item.find_parent('a') or item.select_one('a')
-                    
-                
-
-                    if not a_tag:
-                        print(f"Preskačem '{naslov}' jer link nije pronađen.")
-                        continue
-
-                    link_knjige = f"https://www.korisnaknjiga.com/{a_tag['href']}"
-
-                    autor_tag = item.select_one('.Spisac')
-                    autor = autor_tag.get_text(strip=True) if autor_tag else "Nepoznat autor"
-
-                    print(f"Pristupam stranici: {naslov}...")
-                    time.sleep(1) 
-                    
-                    detalji_resp = requests.get(link_knjige, headers=headers)
-                    detalji_soup = BeautifulSoup(detalji_resp.text, 'html.parser')
-                    
+        for query in queries:
+            print(f"Pretražujem Google Books za: {query}...")
+            # Povećan maxResults na 20 po svakom pojmu
+            api_url = f"https://www.googleapis.com/books/v1/volumes?q={query}&langRestrict=sr&maxResults=20"
             
-                    isbn_tag = detalji_soup.find('p', attrs={"title": "ISBN"})
-                    
-                    if isbn_tag:
-                        isbn = isbn_tag.get_text(strip=True)
-                    else:
-                        
-                        isbn = f"neuspelo"
+            try:
+                response = requests.get(api_url)
+                data = response.json()
 
-                
-                    sql = "INSERT INTO Publikacijas (naziv, autor, isbn, stanje, kategorijaId) VALUES (%s, %s, %s, %s, %s)"
-                    cursor.execute(sql, (naslov, autor, isbn, 10, 1))
-                    db.commit()
-                    
-                    uvezeno += 1
-                    print(f"Uvezeno: {naslov} | ISBN: {isbn}")
-
-                except Exception as e:
-                    
-                    trenutni_naslov = locals().get('naslov', 'Nepoznata knjiga')
-                    print(f"Greška kod '{trenutni_naslov}': {e}")
+                if 'items' not in data:
+                    print(f"Nema rezultata za: {query}")
                     continue
-            brojac+=1
 
-        db.commit()
-       
-        print(f"\nUvezeno sa Korisne Knjige: {uvezeno}")
+                for item in data.get('items', []):
+                    try:
+                        volume_info = item.get('volumeInfo', {})
+                        naslov = volume_info.get('title')
+                        
+                        # Autori
+                        autori_list = volume_info.get('authors', ["Nepoznat autor"])
+                        autori = ", ".join(autori_list)
+                        
+                        # ISBN
+                        isbn = "Nepoznato"
+                        identifiers = volume_info.get('industryIdentifiers', [])
+                        for identifier in identifiers:
+                            if identifier['type'] in ['ISBN_13', 'ISBN_10']:
+                                isbn = identifier['identifier']
+                                break
+                        
+                        # Ako nema ISBN, uzimamo Google ID da ne bi preskakali knjige
+                        if isbn == "Nepoznato":
+                            isbn = item.get('id')
 
-except Exception as e:
-    print(f"Greska: {e}")
-finally:
-    if 'db' in locals() and db.is_connected():
-        cursor.close()
-        db.close()
+                        # Slika
+                        slika_url = volume_info.get('imageLinks', {}).get('thumbnail')
+                        if slika_url:
+                            slika_url = slika_url.replace("http://", "https://")
+                        else:
+                            # Preskačemo knjige bez slike jer ti trebaju za katalog
+                            continue
 
+                        # Provera duplikata
+                        cursor.execute("SELECT id FROM Publikacijas WHERE isbn = %s OR naziv = %s", (isbn, naslov))
+                        if cursor.fetchone():
+                            continue
 
+                        # INSERT
+                        sql = "INSERT INTO Publikacijas (naziv, autor, isbn, stanje, slika_url) VALUES (%s, %s, %s, %s, %s)"
+                        cursor.execute(sql, (naslov, autori, isbn, 10, slika_url))
+                        db.commit()
+                        
+                        print(f"✅ Uvezeno: {naslov}")
+                        total_uvezeno += 1
 
+                    except Exception as e:
+                        continue
+                
+                time.sleep(1) # Pauza da ne preopteretimo API
 
+            except Exception as e:
+                print(f"Greška pri pretrazi za {query}: {e}")
+
+        print(f"\nUspeh! Katalog je dopunjen sa ukupno {total_uvezeno} novih knjiga na srpskom.")
+
+    except Exception as e:
+        print(f"Glavna greška: {e}")
+    finally:
+        if 'db' in locals() and db.is_connected():
+            cursor.close()
+            db.close()
+
+if __name__ == "__main__":
+    fetch_more_serbian_books()

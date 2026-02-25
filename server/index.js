@@ -11,6 +11,7 @@ const citati = require("./eksterni/citati");
 const helmet = require('helmet'); 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
+const { dovuciDetalje } = require('./eksterni/detaljiOKnjizi');
 
 const nodemailer = require("nodemailer");
 const { Zaduzenje, Publikacija, Korisnik } = require("./models");
@@ -116,7 +117,28 @@ app.get("/api/moje-knjige", auth, async (req, res) => {
 });
 
 
-
+app.post('/api/proveri-knjigu', async (req, res) => {
+  try {
+    const { naziv } = req.body;
+    // Direktno zovemo Google, ne treba nam poseban fajl
+    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(naziv)}&maxResults=1`);
+    
+    const knjiga = response.data.items?.[0]?.volumeInfo;
+    
+    if (knjiga) {
+      res.json({
+        slika: knjiga.imageLinks?.thumbnail.replace("http://", "https://") || null,
+        opis: knjiga.description || "Nema opisa.",
+        autor: knjiga.authors ? knjiga.authors[0] : "",
+        isbn: knjiga.industryIdentifiers ? knjiga.industryIdentifiers[0].identifier : "Nepoznato"
+      });
+    } else {
+      res.json({ slika: null, opis: "Knjiga nije pronađena.", autor: "", isbn: "" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Greška pri pretrazi" });
+  }
+});
 app.post("/api/zaduzi-knjigu", async (req, res) => {
   try {
     const { publikacijaId, brojIndeksa } = req.body;

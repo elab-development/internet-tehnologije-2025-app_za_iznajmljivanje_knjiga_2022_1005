@@ -21,15 +21,16 @@ const dovuciDetalje = async (naslov, autor) => {
         slika: knjiga.cover_i ? `https://covers.openlibrary.org/b/id/${knjiga.cover_i}-L.jpg` : null,
         opis: knjiga.first_sentence ? knjiga.first_sentence[0] : "Opis preuzet sa OpenLibrary.",
    
-        autor: knjiga.author_name ? knjiga.author_name[0] : "" 
-    };
-}
+        autor: knjiga.author_name ? knjiga.author_name[0] : "" ,
+ isbn: knjiga.isbn ? knjiga.isbn[0] : "Nepoznato" 
+            };
+        }
         
-        return { slika: null, ocena: "Nema ocene", opis: "Nema opisa." };
+        return { slika: null, ocena: "Nema ocene", opis: "Nema opisa.", isbn: "Nepoznato" };
 
     } catch (e) {
         console.error("Open Library Error:", e.message);
-        return { slika: null, ocena: "Nema ocene", opis: "Nema opisa." };
+        return { slika: null, ocena: "Nema ocene", opis: "Nema opisa.", isbn: "Nepoznato" };
     }
 };
 
