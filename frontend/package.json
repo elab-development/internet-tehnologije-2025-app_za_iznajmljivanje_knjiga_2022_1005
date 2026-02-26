@@ -9,9 +9,6 @@
     "lint": "next lint",
     "test": "jest --passWithNoTests"
   },
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "dependencies": {
     "@vis.gl/react-google-maps": "^1.7.1",
     "next": "15.1.0",
