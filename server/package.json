@@ -4,11 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "npx sequelize-cli db:migrate && node index.js",
     "dev": "nodemon index.js",
-    "lint": "next lint",
-  "test": "jest",
-  "test:watch": "jest --watch"
+    "test": "jest --detectOpenHandles --runInBand --forceExit",
+    "test:watch": "jest --watch"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/tests"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/node_modules_old/"
+    ],
+    "verbose": true
   },
   "keywords": [],
   "author": "",
@@ -30,7 +40,9 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.1.11",
-    "sequelize-cli": "^6.6.5"
+    "sequelize-cli": "^6.6.5",
+    "supertest": "^6.3.4"
   }
 }

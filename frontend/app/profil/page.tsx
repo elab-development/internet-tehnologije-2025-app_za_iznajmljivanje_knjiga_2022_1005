@@ -17,7 +17,7 @@ export default function ProfilPage() {
   const [pretragaIndeksa, setPretragaIndeksa] = useState("");
   const isAdmin = Number(korisnik?.isAdmin) === 1;
   const jeSluzbenik = korisnik?.uloga === "sluzbenik" && !isAdmin;
-
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   const ucitajAdminPodatke = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -26,8 +26,8 @@ export default function ProfilPage() {
 
     try {
       const [resS, resSl] = await Promise.all([
-        fetch("http://localhost:5000/api/admin/studenti", { headers }),
-        fetch("http://localhost:5000/api/admin/sluzbenici", { headers }),
+        fetch(`${BASE_URL}/api/admin/studenti`, { headers }),
+        fetch(`${BASE_URL}/api/admin/sluzbenici`, { headers }),
       ]);
 
       const dataS = resS.ok ? await resS.json() : [];
@@ -43,7 +43,7 @@ export default function ProfilPage() {
   };
   const ucitajZaduzenja = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/zaduzenja/aktivna", {
+      const res = await fetch(`${BASE_URL}/api/zaduzenja/aktivna`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (res.ok) setSvaZaduzenja(await res.json());
@@ -54,7 +54,7 @@ export default function ProfilPage() {
 
   const handleRazduzi = async (id: number) => {
     if (!confirm("Potvrdi vraćanje?")) return;
-    const res = await fetch(`http://localhost:5000/api/razduzi/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/razduzi/${id}`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
@@ -63,22 +63,17 @@ export default function ProfilPage() {
 
   const deaktiviraj = async (tip: string, id: number) => {
     if (!confirm(`Da li ste sigurni?`)) return;
-    const res = await fetch(
-      `http://localhost:5000/api/admin/brisi/${tip}/${id}`,
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      },
-    );
+    const res = await fetch(`${BASE_URL}/api/admin/brisi/${tip}/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
     if (res.ok) ucitajAdminPodatke();
   };
   const pretraziWiki = async () => {
     if (!wikiPojam) return;
     setWikiLoading(true);
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/eksterni/istrazi/${wikiPojam}`,
-      );
+      const res = await fetch(`${BASE_URL}/api/eksterni/istrazi/${wikiPojam}`);
       if (res.ok) {
         const data = await res.json();
         setWikiData(data);
@@ -102,7 +97,7 @@ export default function ProfilPage() {
     const postaviKorisnikaIZaduzenja = (k: any) => {
       setKorisnik(k);
       if (k.uloga === "student") {
-        fetch(`http://localhost:5000/api/zaduzenja/student/${k.id}`)
+        fetch(`${BASE_URL}/api/zaduzenja/student/${k.id}`)
           .then((res) => res.json())
           .then(setZaduzenja)
           .finally(() => setLoading(false));
@@ -119,7 +114,7 @@ export default function ProfilPage() {
       return;
     }
 
-    fetch("http://localhost:5000/api/me", {
+    fetch(`${BASE_URL}/api/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -182,7 +177,7 @@ export default function ProfilPage() {
         </div>
       </section>
 
-        {isAdmin && (
+      {isAdmin && (
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-4">
             <h2 className="flex items-center justify-between text-xs font-black uppercase tracking-[0.2em] text-roze px-2">
@@ -247,7 +242,6 @@ export default function ProfilPage() {
               </span>
             </h2>
 
-            {/* Polje za filter po indeksu */}
             <div className="w-full md:w-64">
               <input
                 type="text"
@@ -260,7 +254,6 @@ export default function ProfilPage() {
           </div>
 
           <div className="grid gap-4">
-            {/* Mapiramo filtriranaZaduzenja umesto svaZaduzenja */}
             {filtriranaZaduzenja.map((z) => (
               <div
                 key={z.id}
@@ -285,7 +278,6 @@ export default function ProfilPage() {
               </div>
             ))}
 
-            {/* Poruka ako nema rezultata pretrage */}
             {filtriranaZaduzenja.length === 0 && (
               <p className="text-gray-400 italic px-2">
                 Nema zaduženja koja se poklapaju sa unetim indeksom.

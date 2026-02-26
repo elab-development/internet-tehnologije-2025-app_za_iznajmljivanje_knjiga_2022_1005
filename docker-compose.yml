@@ -79,3 +79,26 @@ services:
     command: npm run dev -- --webpack
     depends_on:
       - backend
+
+  tester:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+
+    command: npm test -- --watchAll=false
+    environment:
+      - CI=true
+  backend-tester:
+    build: ./server
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    command: npx jest --watchAll=false --detectOpenHandles
+    environment:
+      - NODE_ENV=test
+      - DB_HOST=db
+      - DB_NAME=citaonica
+      - DB_USER=root
+      - DB_PASS=itehhh

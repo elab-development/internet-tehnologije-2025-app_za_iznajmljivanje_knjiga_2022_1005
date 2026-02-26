@@ -16,7 +16,7 @@ export default function RegistracijaStranica() {
   const [greska, setGreska] = useState("");
   const [ucitava, setUcitava] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setGreska("");
@@ -27,7 +27,7 @@ export default function RegistracijaStranica() {
     setUcitava(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/registracija", {
+      const res = await fetch(`${BASE_URL}/api/registracija`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ime, prezime, brojIndeksa, email, password }),

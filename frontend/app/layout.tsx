@@ -59,13 +59,13 @@ export default function RootLayout({
                 >
                   Moj Profil
                 </Link>
-                <Link 
-                  href="/kontakt" 
+                <Link
+                  href="/kontakt"
                   className={`text-base font-bold uppercase tracking-tight ${pathname === "/kontakt" ? "text-mint" : "text-tamno-plava hover:text-mint"}`}
                 >
                   Kontakt
                 </Link>
-                
+
                 {isAdmin && (
                   <Link
                     href="/kreiraj-sluzbenika"
@@ -88,14 +88,13 @@ export default function RootLayout({
               </Link>
             ) : (
               <div className="flex items-center gap-6">
-                {/* DODATO: Prikaz imena korisnika sa malim krugom (avatarom) */}
                 <div className="hidden md:flex items-center gap-2 border-r-2 border-gray-100 pr-6">
-                   <div className="w-8 h-8 bg-mint/20 rounded-full flex items-center justify-center text-xs font-bold text-tamno-plava border border-mint/40">
-                      {korisnik.ime?.charAt(0).toUpperCase()}
-                   </div>
-                   <span className="text-sm font-bold text-gray-700">
-                      {korisnik.ime} {korisnik.prezime}
-                   </span>
+                  <div className="w-8 h-8 bg-mint/20 rounded-full flex items-center justify-center text-xs font-bold text-tamno-plava border border-mint/40">
+                    {korisnik.ime?.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-bold text-gray-700">
+                    {korisnik.ime} {korisnik.prezime}
+                  </span>
                 </div>
 
                 <button

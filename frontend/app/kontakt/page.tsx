@@ -1,57 +1,66 @@
 "use client";
 import { useState } from "react";
-import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react-google-maps";
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  Pin,
+  InfoWindow,
+} from "@vis.gl/react-google-maps";
 import { Dugme } from "../../components/Dugme";
-
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const lokacije = [
-  { 
-    id: 1, 
-    naziv: "Narodna biblioteka Srbije", 
-    pozicija: { lat: 44.7972, lng: 20.4671 }, 
-    opis: "Skerlićeva 1, Vračar" 
+  {
+    id: 1,
+    naziv: "Narodna biblioteka Srbije",
+    pozicija: { lat: 44.7972, lng: 20.4671 },
+    opis: "Skerlićeva 1, Vračar",
   },
-  { 
-    id: 2, 
-    naziv: "Biblioteka grada Beograda", 
-    pozicija: { lat: 44.8189, lng: 20.4578 }, 
-    opis: "Studentski trg 19" 
+  {
+    id: 2,
+    naziv: "Biblioteka grada Beograda",
+    pozicija: { lat: 44.8189, lng: 20.4578 },
+    opis: "Studentski trg 19",
   },
-  { 
-    id: 3, 
-    naziv: "Univerzitetska biblioteka Svetozar Marković", 
-    pozicija: { lat: 44.8058, lng: 20.4735 }, 
-    opis: "Bulevar kralja Aleksandra 71" 
+  {
+    id: 3,
+    naziv: "Univerzitetska biblioteka Svetozar Marković",
+    pozicija: { lat: 44.8058, lng: 20.4735 },
+    opis: "Bulevar kralja Aleksandra 71",
   },
-  { 
-    id: 4, 
-    naziv: "Biblioteka FON", 
-    pozicija: { lat: 44.7727, lng: 20.4752 }, 
-    opis: "Jove Ilića 154, Voždovac" 
+  {
+    id: 4,
+    naziv: "Biblioteka FON",
+    pozicija: { lat: 44.7727, lng: 20.4752 },
+    opis: "Jove Ilića 154, Voždovac",
   },
-  { 
-    id: 5, 
-    naziv: "Biblioteka FPN", 
-    pozicija: { lat: 44.7721, lng: 20.4740 }, 
-    opis: "Jove Ilića 165, Voždovac" 
+  {
+    id: 5,
+    naziv: "Biblioteka FPN",
+    pozicija: { lat: 44.7721, lng: 20.474 },
+    opis: "Jove Ilića 165, Voždovac",
   },
-  { 
-    id: 6, 
-    naziv: "Biblioteka Saobraćajnog fakulteta", 
-    pozicija: { lat: 44.7730, lng: 20.4780 }, 
-    opis: "Vojvode Stepe 305" 
-  }
+  {
+    id: 6,
+    naziv: "Biblioteka Saobraćajnog fakulteta",
+    pozicija: { lat: 44.773, lng: 20.478 },
+    opis: "Vojvode Stepe 305",
+  },
 ];
 
-const centarBeograda = { lat: 44.7900, lng: 20.4700 };
+const centarBeograda = { lat: 44.79, lng: 20.47 };
 
 export default function KontaktPage() {
   const [forma, setForma] = useState({ ime: "", email: "", poruka: "" });
-  const [status, setStatus] = useState<{ tip: "uspeh" | "greska", tekst: string } | null>(null);
+  const [status, setStatus] = useState<{
+    tip: "uspeh" | "greska";
+    tekst: string;
+  } | null>(null);
   const [selektovanaLib, setSelektovanaLib] = useState<any>(null);
 
   const posaljiMejl = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:5000/api/kontakt", {
+    const res = await fetch(`${BASE_URL}/api/kontakt`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(forma),
@@ -61,25 +70,42 @@ export default function KontaktPage() {
       setStatus({ tip: "uspeh", tekst: "Poruka uspešno poslata!" });
       setForma({ ime: "", email: "", poruka: "" });
     } else {
-      setStatus({ tip: "greska", tekst: "Došlo je do greške, pokušajte ponovo." });
+      setStatus({
+        tip: "greska",
+        tekst: "Došlo je do greške, pokušajte ponovo.",
+      });
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-8 space-y-12">
       <section className="text-center space-y-4">
-        <h1 className="text-4xl font-black text-tamno-plava uppercase italic">Kontaktirajte nas</h1>
-        <p className="text-gray-500 italic">Informacije o radu biblioteka i direktna podrška.</p>
+        <h1 className="text-4xl font-black text-tamno-plava uppercase italic">
+          Kontaktirajte nas
+        </h1>
+        <p className="text-gray-500 italic">
+          Informacije o radu biblioteka i direktna podrška.
+        </p>
       </section>
 
       <div className="grid md:grid-cols-2 gap-12 bg-white p-10 rounded-[2rem] border-2 border-svetlo-plava shadow-sm">
         <div className="space-y-6 text-black">
-          <h2 className="text-xl font-bold text-tamno-plava uppercase border-b-2 border-mint pb-2 inline-block">Info</h2>
+          <h2 className="text-xl font-bold text-tamno-plava uppercase border-b-2 border-mint pb-2 inline-block">
+            Info
+          </h2>
           <div className="space-y-4 text-gray-600">
-            <p><strong>Lokacije:</strong> Beograd (Centar, Vračar, Voždovac)</p>
-            <p><strong>Telefon:</strong> +381 11 123 456</p>
-            <p><strong>Email:</strong> vukbojanic000@gmail.com</p>
-            <p><strong>Radno vreme:</strong> Pon - Pet (08:00 - 20:00)</p>
+            <p>
+              <strong>Lokacije:</strong> Beograd (Centar, Vračar, Voždovac)
+            </p>
+            <p>
+              <strong>Telefon:</strong> +381 11 123 456
+            </p>
+            <p>
+              <strong>Email:</strong> vukbojanic000@gmail.com
+            </p>
+            <p>
+              <strong>Radno vreme:</strong> Pon - Pet (08:00 - 20:00)
+            </p>
           </div>
         </div>
 
@@ -108,9 +134,11 @@ export default function KontaktPage() {
             onChange={(e) => setForma({ ...forma, poruka: e.target.value })}
             required
           />
-          
+
           {status && (
-            <p className={`text-sm font-bold ${status.tip === "uspeh" ? "text-green-600" : "text-red-600"}`}>
+            <p
+              className={`text-sm font-bold ${status.tip === "uspeh" ? "text-green-600" : "text-red-600"}`}
+            >
               {status.tekst}
             </p>
           )}
@@ -126,7 +154,7 @@ export default function KontaktPage() {
             defaultZoom={12}
             mapId={"DEMO_MAP_ID"}
             disableDefaultUI={true}
-            gestureHandling={'greedy'}
+            gestureHandling={"greedy"}
           >
             {lokacije.map((lib) => (
               <AdvancedMarker
@@ -134,10 +162,10 @@ export default function KontaktPage() {
                 position={lib.pozicija}
                 onClick={() => setSelektovanaLib(lib)}
               >
-                <Pin 
-                  background={'#F97373'} 
-                  glyphColor={'#ffffff'} 
-                  borderColor={'#B91C1C'} 
+                <Pin
+                  background={"#F97373"}
+                  glyphColor={"#ffffff"}
+                  borderColor={"#B91C1C"}
                 />
               </AdvancedMarker>
             ))}
@@ -148,7 +176,9 @@ export default function KontaktPage() {
                 onCloseClick={() => setSelektovanaLib(null)}
               >
                 <div className="p-2 text-black">
-                  <h3 className="font-bold border-b border-mint mb-1">{selektovanaLib.naziv}</h3>
+                  <h3 className="font-bold border-b border-mint mb-1">
+                    {selektovanaLib.naziv}
+                  </h3>
                   <p className="text-xs text-gray-700">{selektovanaLib.opis}</p>
                 </div>
               </InfoWindow>
