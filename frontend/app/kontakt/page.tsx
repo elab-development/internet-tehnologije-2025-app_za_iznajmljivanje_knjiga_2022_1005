@@ -51,7 +51,7 @@ export default function KontaktPage() {
 
   const posaljiMejl = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/api/kontakt", {
+    const res = await fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/kontakt", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(forma),

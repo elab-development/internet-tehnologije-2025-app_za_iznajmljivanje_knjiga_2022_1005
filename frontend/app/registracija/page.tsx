@@ -27,7 +27,7 @@ export default function RegistracijaStranica() {
     setUcitava(true);
 
     try {
-      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/api/registracija", {
+      const res = await fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/registracija", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ime, prezime, brojIndeksa, email, password }),

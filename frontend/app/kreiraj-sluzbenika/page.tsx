@@ -24,7 +24,7 @@ export default function KreirajSluzbenika() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/api/admin/kreiraj-sluzbenika", {
+      const res = await fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/admin/kreiraj-sluzbenika", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
