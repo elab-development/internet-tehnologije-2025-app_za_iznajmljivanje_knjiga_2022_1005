@@ -7,35 +7,123 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5000"
-
+      "url": "https://overflowing-spirit-production-fde5.up.railway.app",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:5000",
+      "description": "Lokalni server"
     }
   ],
   "tags": [
+    { "name": "Auth", "description": "Login i registracija" },
     { "name": "Korisnik", "description": "Profil i informacije o ulogovanom korisniku" },
+    { "name": "Publikacije", "description": "Pregled knjiga u biblioteci" },
     { "name": "Admin", "description": "Administrativno upravljanje korisnicima" },
     { "name": "Zaduženja", "description": "Upravljanje pozajmicama i vraćanjem knjiga" },
-    { "name": "Eksterno", "description": "Integracija sa Open Library i pretraga" }
+    { "name": "Eksterno", "description": "Integracija sa Google Books i Open Library" },
+    { "name": "Ostalo", "description": "Kontakt forma i citati" }
   ],
   "paths": {
+    "/api/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Prijava na sistem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "lozinka": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Vraća JWT token" } }
+      }
+    },
+    "/api/registracija": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registracija novog studenta",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ime": { "type": "string" },
+                  "prezime": { "type": "string" },
+                  "email": { "type": "string" },
+                  "lozinka": { "type": "string" },
+                  "brojIndeksa": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Korisnik kreiran" } }
+      }
+    },
+    "/api/publikacije": {
+      "get": {
+        "tags": ["Publikacije"],
+        "summary": "Lista svih dostupnih knjiga",
+        "responses": { "200": { "description": "Niz svih publikacija" } }
+      }
+    },
     "/api/me": {
       "get": {
         "tags": ["Korisnik"],
         "summary": "Podaci o trenutno ulogovanom korisniku",
-        "responses": { "200": { "description": "Vraća objekat korisnika" } }
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Vraća profil korisnika" } }
       }
     },
     "/api/moje-knjige": {
       "get": {
         "tags": ["Korisnik"],
         "summary": "Lista aktivnih zaduženja ulogovanog studenta",
+        "security": [{ "bearerAuth": [] }],
         "responses": { "200": { "description": "Niz zaduženja" } }
+      }
+    },
+    "/api/citati": {
+      "get": {
+        "tags": ["Ostalo"],
+        "summary": "Dobavljanje nasumičnog citata",
+        "responses": { "200": { "description": "Vraća tekst citata" } }
+      }
+    },
+    "/api/kontakt": {
+      "post": {
+        "tags": ["Ostalo"],
+        "summary": "Slanje poruke biblioteci preko kontakt forme",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ime": { "type": "string" },
+                  "email": { "type": "string" },
+                  "poruka": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Mejl uspešno poslat" } }
       }
     },
     "/api/zaduzi-knjigu": {
       "post": {
         "tags": ["Zaduženja"],
-        "summary": "Zaduživanje knjige studentu preko broja indeksa",
+        "summary": "Zaduživanje knjige studentu",
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "content": {
             "application/json": {
@@ -55,113 +143,29 @@
     "/api/razduzi/{id}": {
       "put": {
         "tags": ["Zaduženja"],
-        "summary": "Vraćanje knjige (razduživanje)",
+        "summary": "Vraćanje knjige",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
         "responses": { "200": { "description": "Knjiga vraćena" } }
       }
     },
-    "/api/admin/sluzbenici": {
-      "get": {
-        "tags": ["Admin"],
-        "summary": "Lista svih službenika (bez admina)",
-        "responses": { "200": { "description": "Niz službenika" } }
-      }
-    },
     "/api/admin/studenti": {
       "get": {
         "tags": ["Admin"],
         "summary": "Lista svih studenata",
+        "security": [{ "bearerAuth": [] }],
         "responses": { "200": { "description": "Niz studenata" } }
       }
-    },
-    "/api/admin/brisi/{tip}/{id}": {
-      "delete": {
-        "tags": ["Admin"],
-        "summary": "Brisanje studenta ili službenika",
-        "parameters": [
-          { "name": "tip", "in": "path", "required": true, "schema": { "type": "string", "enum": ["student", "sluzbenik"] } },
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
-        ],
-        "responses": { "200": { "description": "Nalog obrisan" } }
-      }
-    },
-    "/api/admin/kreiraj-sluzbenika": {
-      "post": {
-        "tags": ["Admin"],
-        "summary": "Dodavanje novog službenika u sistem",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "ime": { "type": "string" },
-                  "prezime": { "type": "string" },
-                  "email": { "type": "string" },
-                  "password": { "type": "string" }
-                }
-              }
-            }
-          }
-        },
-        "responses": { "201": { "description": "Službenik kreiran" } }
-      }
-    },
-    "/api/zaduzenja/aktivna": {
-      "get": {
-        "tags": ["Zaduženja"],
-        "summary": "Pregled svih trenutno aktivnih zaduženja",
-        "responses": { "200": { "description": "Niz svih aktivnih zaduženja" } }
-      }
-    },
-    "/zaduzenja/istorija/{studentId}": {
-      "get": {
-        "tags": ["Zaduženja"],
-        "summary": "Istorija svih vraćenih knjiga za određenog studenta",
-        "parameters": [
-          { "name": "studentId", "in": "path", "required": true, "schema": { "type": "integer" } }
-        ],
-        "responses": { "200": { "description": "Niz istorije" } }
-      }
-    },
-    "/api/proveri-knjigu": {
-      "post": {
-        "tags": ["Eksterno"],
-        "summary": "Povlačenje detalja pre dodavanja nove publikacije",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "naziv": { "type": "string" },
-                  "autor": { "type": "string" }
-                }
-              }
-            }
-          }
-        },
-        "responses": { "200": { "description": "Vraća sliku, opis i ocenu" } }
-      }
-    },
-    "/api/eksterni-detalji": {
-      "get": {
-        "tags": ["Eksterno"],
-        "summary": "Povlačenje slika i ocene za već postojeće publikacije",
-        "parameters": [
-          { "name": "naslov", "in": "query", "required": true, "schema": { "type": "string" } },
-          { "name": "autor", "in": "query", "schema": { "type": "string" } }
-        ],
-        "responses": { "200": { "description": "Podaci iz sa OpenLibrary-a" } }
-      }
-    },
-    "/api/debug-rok": {
-      "get": {
-        "tags": ["Eksterno"],
-        "summary": "Ručno pokretanje slanja email podsetnika",
-        "responses": { "200": { "description": "Email provera pokrenuta" } }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
