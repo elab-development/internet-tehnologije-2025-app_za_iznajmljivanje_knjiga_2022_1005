@@ -8,7 +8,7 @@ module.exports = {
         isbn: '123-456',
         autor: 'Brendan Eich',
         stanje: 5,
-        kategorijaId: 1, 
+     
         
       },
       {
@@ -16,7 +16,7 @@ module.exports = {
         isbn: '789-101',
         autor: 'Ivo Andrić',
         stanje: 2,
-        kategorijaId: 2, 
+       
        
       }
     ]);

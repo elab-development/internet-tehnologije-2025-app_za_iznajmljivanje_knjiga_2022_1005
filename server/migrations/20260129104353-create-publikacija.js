@@ -9,22 +9,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      naziv: {
-        type: Sequelize.STRING
-      },
-      isbn: {
-        type: Sequelize.STRING
-      },
-      autor: {
-        type: Sequelize.STRING
-      },
-      stanje: {
-        type: Sequelize.INTEGER
-      },
-      kategorijaId: {
-        type: Sequelize.INTEGER
-      },
-    
+      naziv: { type: Sequelize.STRING },
+      isbn: { type: Sequelize.STRING },
+      autor: { type: Sequelize.STRING },
+      stanje: { type: Sequelize.INTEGER },
+      // DODAJEMO SLIKU ODMAH
+      slika_url: { type: Sequelize.STRING(500) } 
+      // OBRISANO: kategorijaId (više nam ne treba ni na početku)
     });
   },
   async down(queryInterface, Sequelize) {

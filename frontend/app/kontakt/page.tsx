@@ -3,7 +3,6 @@ import { useState } from "react";
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react-google-maps";
 import { Dugme } from "../../components/Dugme";
 
-// Podaci o bibliotekama (Sopstveni objekti)
 const lokacije = [
   { 
     id: 1, 
@@ -15,24 +14,39 @@ const lokacije = [
     id: 2, 
     naziv: "Biblioteka grada Beograda", 
     pozicija: { lat: 44.8189, lng: 20.4578 }, 
-    opis: "Studentski trg 19 (Odeljenje stare i retke knjige)" 
+    opis: "Studentski trg 19" 
   },
   { 
     id: 3, 
     naziv: "Univerzitetska biblioteka Svetozar Marković", 
     pozicija: { lat: 44.8058, lng: 20.4735 }, 
     opis: "Bulevar kralja Aleksandra 71" 
+  },
+  { 
+    id: 4, 
+    naziv: "Biblioteka FON", 
+    pozicija: { lat: 44.7727, lng: 20.4752 }, 
+    opis: "Jove Ilića 154, Voždovac" 
+  },
+  { 
+    id: 5, 
+    naziv: "Biblioteka FPN", 
+    pozicija: { lat: 44.7721, lng: 20.4740 }, 
+    opis: "Jove Ilića 165, Voždovac" 
+  },
+  { 
+    id: 6, 
+    naziv: "Biblioteka Saobraćajnog fakulteta", 
+    pozicija: { lat: 44.7730, lng: 20.4780 }, 
+    opis: "Vojvode Stepe 305" 
   }
 ];
 
-const centarBeograda = { lat: 44.8080, lng: 20.4650 };
+const centarBeograda = { lat: 44.7900, lng: 20.4700 };
 
 export default function KontaktPage() {
-  // State za formu
   const [forma, setForma] = useState({ ime: "", email: "", poruka: "" });
   const [status, setStatus] = useState<{ tip: "uspeh" | "greska", tekst: string } | null>(null);
-  
-  // State za mapu
   const [selektovanaLib, setSelektovanaLib] = useState<any>(null);
 
   const posaljiMejl = async (e: React.FormEvent) => {
@@ -53,18 +67,16 @@ export default function KontaktPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-8 space-y-12">
-      {/* NASLOVNA SEKCIJA */}
       <section className="text-center space-y-4">
         <h1 className="text-4xl font-black text-tamno-plava uppercase italic">Kontaktirajte nas</h1>
         <p className="text-gray-500 italic">Informacije o radu biblioteka i direktna podrška.</p>
       </section>
 
-      {/* INFO I FORMA SEKCIJA */}
       <div className="grid md:grid-cols-2 gap-12 bg-white p-10 rounded-[2rem] border-2 border-svetlo-plava shadow-sm">
         <div className="space-y-6 text-black">
           <h2 className="text-xl font-bold text-tamno-plava uppercase border-b-2 border-mint pb-2 inline-block">Info</h2>
           <div className="space-y-4 text-gray-600">
-            <p><strong>Lokacije:</strong> Beograd (Centar, Vračar, Palilula)</p>
+            <p><strong>Lokacije:</strong> Beograd (Centar, Vračar, Voždovac)</p>
             <p><strong>Telefon:</strong> +381 11 123 456</p>
             <p><strong>Email:</strong> vukbojanic000@gmail.com</p>
             <p><strong>Radno vreme:</strong> Pon - Pet (08:00 - 20:00)</p>
@@ -107,33 +119,29 @@ export default function KontaktPage() {
         </form>
       </div>
 
-      {/* NAPREDNA MAPA SEKCIJA */}
       <section className="w-full h-[500px] overflow-hidden rounded-[2rem] shadow-xl border-4 border-white ring-2 ring-svetlo-plava">
-        <APIProvider apiKey={"AIzaSyAXw4cVgf2cTdqskn4VWOU8JGfXPwQqp0A"}>
+        <APIProvider apiKey={"AIzaSyB9_ALeZQUgzhl75smI-rBY8J2xGpzny0g"}>
           <Map
             defaultCenter={centarBeograda}
-            defaultZoom={13}
-            mapId={"DEMO_MAP_ID"} // Neophodno za AdvancedMarker
-            disableDefaultUI={true} // Napredno podešavanje (Custom UI)
+            defaultZoom={12}
+            mapId={"DEMO_MAP_ID"}
+            disableDefaultUI={true}
             gestureHandling={'greedy'}
           >
-            {/* Sopstveni objekti - Markeri kroz loop */}
             {lokacije.map((lib) => (
               <AdvancedMarker
                 key={lib.id}
                 position={lib.pozicija}
                 onClick={() => setSelektovanaLib(lib)}
               >
-                {/* Sopstveni vizuelni lejer: Prilagođeni Pin */}
                 <Pin 
-                  background={'#4FD1C5'} 
+                  background={'#F97373'} 
                   glyphColor={'#ffffff'} 
-                  borderColor={'#2c7a7b'} 
+                  borderColor={'#B91C1C'} 
                 />
               </AdvancedMarker>
             ))}
 
-            {/* Dinamički objekat - InfoWindow */}
             {selektovanaLib && (
               <InfoWindow
                 position={selektovanaLib.pozicija}

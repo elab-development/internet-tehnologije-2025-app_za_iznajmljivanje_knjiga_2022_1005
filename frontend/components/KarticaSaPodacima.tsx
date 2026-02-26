@@ -1,37 +1,31 @@
-
 "use client";
 import React, { useState, useEffect } from "react"; 
 import { Dugme } from "./Dugme";
+
 export function KarticaSaPodacima({ p, isAdmin, jeSluzbenik, obrisiPublikaciju, handleZaduzivanje, router }: any) {
   const [eksterno, setEksterno] = useState<any>(null);
-  const [ucitava, setUcitava] = useState(false);
-  const requestCache: Record<string, boolean> = {};
 
- useEffect(() => {
+  useEffect(() => {
+    // Ako već imamo sliku iz baze (p.slika_url), ne moramo zvati eksterni API
+    if (p.slika_url || !p.naziv || eksterno) return;
 
-  if (!p.naziv || eksterno || requestCache[p.naziv]) return;
+    fetch(`http://localhost:5000/api/eksterni-detalji?naslov=${encodeURIComponent(p.naziv)}`)
+      .then((res) => res.json())
+      .then((data) => setEksterno(data))
+      .catch(() => setEksterno({ slika: null }));
+  }, [p.naziv, p.slika_url]);
 
-  requestCache[p.naziv] = true;
-
-  fetch(`http://localhost:5000/api/eksterni-detalji?naslov=${encodeURIComponent(p.naziv)}`)
-    .then((res) => res.json())
-    .then((data) => {
-      setEksterno(data);
-    })
-    .catch(() => {
-      setEksterno({ slika: null });
-    });
-}, [p.naziv]);
+  // Određujemo koju sliku prikazati: prioritet ima ona iz skrapera (p.slika_url)
+  const konacnaSlika = p.slika_url || eksterno?.slika;
 
   return (
     <div className="p-6 bg-white border-2 border-svetlo-plava rounded-2xl shadow-sm space-y-4 flex flex-col">
       <div className="flex gap-4">
- 
         <div className="w-20 h-28 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-          {eksterno?.slika ? (
-            <img src={eksterno.slika} alt={p.naziv} className="w-full h-full object-cover" />
+          {konacnaSlika ? (
+            <img src={konacnaSlika} alt={p.naziv} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">Nema slike</div>
+            <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 text-center p-1">Nema slike</div>
           )}
         </div>
 
@@ -43,14 +37,14 @@ export function KarticaSaPodacima({ p, isAdmin, jeSluzbenik, obrisiPublikaciju, 
               </h3>
               <p className="text-sm text-gray-500 italic truncate">{p.autor}</p>
               
-            
+              {/* Prikaz ocene ako postoji */}
               {eksterno?.ocena && eksterno.ocena !== "Nema ocene" ? (
-  <div className="mt-1 text-xs font-bold text-yellow-500">
-    ⭐ {eksterno.ocena} <span className="text-gray-400 font-normal">({eksterno.brojOcena})</span>
-  </div>
-) : (
-  <div className="mt-1 text-[10px] text-gray-300 italic">Nema recenzija</div>
-)}
+                <div className="mt-1 text-xs font-bold text-yellow-500">
+                  ⭐ {eksterno.ocena} <span className="text-gray-400 font-normal">({eksterno.brojOcena})</span>
+                </div>
+              ) : (
+                <div className="mt-1 text-[10px] text-gray-300 italic">Nema recenzija</div>
+              )}
             </div>
           </div>
           <div className="mt-2">

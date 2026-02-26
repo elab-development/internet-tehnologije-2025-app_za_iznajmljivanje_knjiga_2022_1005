@@ -16,9 +16,13 @@ export const ZaduzenjeKartica = ({ naziv, rok }: ZaduzenjeProps) => {
   const jeIsteklo = rokDatum && rokDatum < danas && rok !== "Nije definisano";
 
   return (
-    <div className={`flex justify-between items-center p-6 rounded-2xl border transition-all ${
-      jeIsteklo ? "bg-crvena/15 border-crvena/50" : "bg-white border-mint/50 shadow-sm"
-    }`}>
+    <div
+      className={`flex justify-between items-center p-6 rounded-2xl border transition-all transform ${
+        jeIsteklo
+          ? "bg-crvena/15 border-crvena/50 hover:border-crvena hover:bg-crvena/20"
+          : "bg-white border-mint/50 shadow-sm hover:shadow-md hover:border-mint/80"
+      } hover:-translate-y-0.5`}
+    >
       <div>
         <h3 className={`font-bold ${jeIsteklo ? "text-tamno-plava" : "text-gray-900"}`}>
           {naziv}

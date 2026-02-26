@@ -34,7 +34,21 @@ jobs:
           cd frontend
           npm install
 
+    
+      - name: Pokretanje testova
+        run: |
+          cd frontend
+          npm test -- --watchAll=false
+
+      
       - name: Build Frontend
         run: |
           cd frontend
           npm run build -- --webpack
+
+      
+      - name: Automatski Deployment na Cloud
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Pokretanje deployment-a na Cloud server..."
+          # Ovde se u realnom scenariju izvršava povezivanje sa serverom

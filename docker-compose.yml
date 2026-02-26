@@ -59,6 +59,16 @@ services:
       db:
         condition: service_healthy
 
+  tester:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+   
+    command: npm test -- --watchAll=false
+    environment:
+      - CI=true
   frontend:
     build: ./frontend
     ports:
