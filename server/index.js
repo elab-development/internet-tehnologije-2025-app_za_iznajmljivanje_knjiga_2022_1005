@@ -8,9 +8,6 @@ const korisniciRoutes = require("./routes/korisniciRoutes");
 const auth = require("./middleware/authMiddleware");
 const istrazi = require("./eksterni/istrazi");
 const citati = require("./eksterni/citati");
-const helmet = require("helmet");
-const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./swagger.json");
 
 const nodemailer = require("nodemailer");
 const { Zaduzenje, Publikacija, Korisnik } = require("./models");
@@ -310,3 +307,5 @@ app.listen(PORT, () => {
   console.log(`Server radi na portu ${PORT}`);
   startCron();
 });
+
+module.exports = app;

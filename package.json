@@ -5,5 +5,9 @@
   },
   "devDependencies": {
     "@types/google.maps": "^3.58.1"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest --watchAll --detectOpenHandles"
   }
 }

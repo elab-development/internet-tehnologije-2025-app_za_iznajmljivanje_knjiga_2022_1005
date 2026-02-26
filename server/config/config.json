@@ -5,6 +5,21 @@
     "database": "citaonica",
     "host": "db",
     "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "itehhh",
+    "database": "citaonica",
+    "host": "db",
+    "dialect": "mysql",
+    "logging": false
+  },
+  "production": {
+    "username": "root",
+    "password": "itehhh",
+    "database": "citaonica",
+    "host": "db",
+    "dialect": "mysql",
+    "logging": false
   }
-  
 }
