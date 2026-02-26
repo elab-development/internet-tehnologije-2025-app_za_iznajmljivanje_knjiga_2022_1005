@@ -1,6 +1,6 @@
 const { Publikacija } = require('../models');
 
-// Funkcija 1: Lista svih
+
 exports.getAll = async (req, res) => {
     try {
         const publikacije = await Publikacija.findAll();
@@ -10,7 +10,7 @@ exports.getAll = async (req, res) => {
     }
 };
 
-// Funkcija 2: Dodavanje nove (OVO TI JE BITNO ZA DUGME)
+
 exports.create = async (req, res) => {
     try {
         const { naziv, autor, stanje, slika_url, isbn } = req.body;
@@ -27,7 +27,7 @@ exports.create = async (req, res) => {
     }
 };
 
-// Funkcija 3: Provera podataka (privremeno prazna da ne puca server)
+
 exports.proveriKnjigu = async (req, res) => {
     res.json({ message: "Ruta radi, ali smo isključili eksterni API privremeno." });
 };

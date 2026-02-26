@@ -297,9 +297,10 @@ app.get("/zaduzenja/istorija/:studentId", async (req, res) => {
     res.status(500).json({ message: "Greška pri učitavanju istorije." });
   }
 });
-
-const PORT = 5000;
-app.listen(PORT, () => {
+// Izmeni dno fajla:
+const PORT = process.env.PORT || 5000; // Cloud će ovde ubaciti svoj port
+app.listen(PORT, '0.0.0.0', () => { // '0.0.0.0' je obavezno za Cloud!
   console.log(`Server radi na portu ${PORT}`);
-  startCron();
+   startCron();
 });
+
