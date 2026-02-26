@@ -20,6 +20,9 @@
     ],
     "verbose": true
   },
+  "engines": {
+    "node": "20.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
