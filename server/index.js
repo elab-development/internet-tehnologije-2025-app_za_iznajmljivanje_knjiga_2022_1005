@@ -300,6 +300,17 @@ app.get("/zaduzenja/istorija/:studentId", async (req, res) => {
     res.status(500).json({ message: "Greška pri učitavanju istorije." });
   }
 });
+
+const path = require('path');
+
+// 1. Reći Express-u gde su tvoji HTML/JS/CSS fajlovi
+// Pretpostavljamo da ti je folder 'frontend' pored 'backend' foldera
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// 2. Svaki put kad neko ode na tvoj link (a nije API ruta), pošalji mu index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+}); 
 // Izmeni dno fajla:
 const PORT = process.env.PORT || 5000; // Cloud će ovde ubaciti svoj port
 app.listen(PORT, '0.0.0.0', () => { // '0.0.0.0' je obavezno za Cloud!

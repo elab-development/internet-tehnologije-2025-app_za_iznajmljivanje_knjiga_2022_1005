@@ -1,10 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
- 
   reactCompiler: true,
-  
-
   images: {
     remotePatterns: [
       {
@@ -16,14 +13,6 @@ const nextConfig: NextConfig = {
         hostname: 'books.google.com',
       },
     ],
-  },
-
-  webpack: (config) => {
-    config.watchOptions = {
-      poll: 1000,   
-      aggregateTimeout: 300, 
-    };
-    return config;
   },
 };
 

@@ -31,7 +31,7 @@ const CitatDana = () => {
         }
 
         // 2. Ako nemamo u memoriji, tek onda vuci sa servera
-        const res = await fetch("http://localhost:5000/api/citati");
+        const res = await fetch("process.env.NEXT_PUBLIC_API_URL/api/citati");
         const data = await res.json();
         
         if (Array.isArray(data) && data.length > 0 && data[0].tekst) {
@@ -122,7 +122,7 @@ export default function KatalogPage() {
   }, []);
 
   const osveziPodatke = () => {
-    fetch("http://localhost:5000/api/publikacije")
+    fetch("process.env.NEXT_PUBLIC_API_URL/api/publikacije")
       .then((res) => res.json())
       .then((data) => {
         setPublikacije(Array.isArray(data) ? data : []);
@@ -136,7 +136,7 @@ export default function KatalogPage() {
 
   const obrisiPublikaciju = async (id: number) => {
     if (!confirm("Obrisati?")) return;
-    const res = await fetch(`http://localhost:5000/api/publikacije/${id}`, { method: "DELETE" });
+    const res = await fetch(`process.env.NEXT_PUBLIC_API_URL/api/publikacije/${id}`, { method: "DELETE" });
     if (res.ok) setPublikacije((prev) => prev.filter((p) => p.id !== id));
   };
 
@@ -152,7 +152,7 @@ export default function KatalogPage() {
     setMrdni(true);
     setTimeout(() => setMrdni(false), 200);
 
-    fetch("http://localhost:5000/api/zaduzi-knjigu", {
+    fetch("process.env.NEXT_PUBLIC_API_URL/api/zaduzi-knjigu", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
