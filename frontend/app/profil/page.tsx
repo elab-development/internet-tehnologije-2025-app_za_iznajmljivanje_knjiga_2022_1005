@@ -26,8 +26,8 @@ export default function ProfilPage() {
 
     try {
       const [resS, resSl] = await Promise.all([
-        fetch("process.env.NEXT_PUBLIC_API_URL/api/admin/studenti", { headers }),
-        fetch("process.env.NEXT_PUBLIC_API_URL/api/admin/sluzbenici", { headers }),
+        fetch("${process.env.NEXT_PUBLIC_API_URL}/api/admin/studenti", { headers }),
+        fetch("${process.env.NEXT_PUBLIC_API_URL}/api/admin/sluzbenici", { headers }),
       ]);
 
       const dataS = resS.ok ? await resS.json() : [];
@@ -43,7 +43,7 @@ export default function ProfilPage() {
   };
   const ucitajZaduzenja = async () => {
     try {
-      const res = await fetch("process.env.NEXT_PUBLIC_API_URL/api/zaduzenja/aktivna", {
+      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/api/zaduzenja/aktivna", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (res.ok) setSvaZaduzenja(await res.json());
@@ -54,7 +54,7 @@ export default function ProfilPage() {
 
   const handleRazduzi = async (id: number) => {
     if (!confirm("Potvrdi vraćanje?")) return;
-    const res = await fetch(`process.env.NEXT_PUBLIC_API_URL/api/razduzi/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/razduzi/${id}`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
@@ -77,7 +77,7 @@ export default function ProfilPage() {
     setWikiLoading(true);
     try {
       const res = await fetch(
-        `process.env.NEXT_PUBLIC_API_URL/api/eksterni/istrazi/${wikiPojam}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/eksterni/istrazi/${wikiPojam}`,
       );
       if (res.ok) {
         const data = await res.json();
@@ -102,7 +102,7 @@ export default function ProfilPage() {
     const postaviKorisnikaIZaduzenja = (k: any) => {
       setKorisnik(k);
       if (k.uloga === "student") {
-        fetch(`process.env.NEXT_PUBLIC_API_URL/api/zaduzenja/student/${k.id}`)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/zaduzenja/student/${k.id}`)
           .then((res) => res.json())
           .then(setZaduzenja)
           .finally(() => setLoading(false));
@@ -119,7 +119,7 @@ export default function ProfilPage() {
       return;
     }
 
-    fetch("process.env.NEXT_PUBLIC_API_URL/api/me", {
+    fetch("${process.env.NEXT_PUBLIC_API_URL}/api/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : null))
