@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require("express");
 const cors = require("cors");
 const { startCron } = require("./eksterni/email");
@@ -12,6 +14,7 @@ const helmet = require('helmet');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const { dovuciDetalje } = require('./eksterni/detaljiOKnjizi');
+
 
 const nodemailer = require("nodemailer");
 const { Zaduzenje, Publikacija, Korisnik } = require("./models");
