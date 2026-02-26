@@ -14,6 +14,7 @@ export default function KreirajSluzbenika() {
   const [greska, setGreska] = useState("");
   const [uspeh, setUspeh] = useState("");
   const [loading, setLoading] = useState(false);
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,18 +25,27 @@ export default function KreirajSluzbenika() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:5000/api/admin/kreiraj-sluzbenika", {
+      const res = await fetch(`${BASE_URL}/api/admin/kreiraj-sluzbenika`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ ime, prezime, email, password, uloga: "sluzbenik" }),
+        body: JSON.stringify({
+          ime,
+          prezime,
+          email,
+          password,
+          uloga: "sluzbenik",
+        }),
       });
 
       if (res.ok) {
         setUspeh("Službenik uspešno kreiran!");
-        setIme(""); setEmail(""); setPassword(""); setPrezime("");
+        setIme("");
+        setEmail("");
+        setPassword("");
+        setPrezime("");
       } else {
         const data = await res.json();
         setGreska(data.message || "Greška pri kreiranju.");
@@ -52,24 +62,40 @@ export default function KreirajSluzbenika() {
       <h1 className="text-3xl font-black text-tamno-plava mb-8 text-center uppercase tracking-tight">
         Novi Službenik
       </h1>
-      
-      <form onSubmit={handleSubmit} className="bg-white p-10 rounded-[2rem] border-2 border-roze/30 shadow-xl space-y-4">
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-10 rounded-[2rem] border-2 border-roze/30 shadow-xl space-y-4"
+      >
         <div className="grid grid-cols-2 gap-4">
           <Polje labela="Ime" vrednost={ime} promena={setIme} />
           <Polje labela="Prezime" vrednost={prezime} promena={setPrezime} />
         </div>
-        
-        <Polje labela="Email" type="email" vrednost={email} promena={setEmail} />
-        <PoljeZaSifru labela="Lozinka" vrednost={password} promena={setPassword} />
 
-        {greska && <p className="text-crvena text-sm font-bold text-center">{greska}</p>}
-        {uspeh && <p className="text-mint text-sm font-bold text-center">{uspeh}</p>}
+        <Polje
+          labela="Email"
+          type="email"
+          vrednost={email}
+          promena={setEmail}
+        />
+        <PoljeZaSifru
+          labela="Lozinka"
+          vrednost={password}
+          promena={setPassword}
+        />
+
+        {greska && (
+          <p className="text-crvena text-sm font-bold text-center">{greska}</p>
+        )}
+        {uspeh && (
+          <p className="text-mint text-sm font-bold text-center">{uspeh}</p>
+        )}
 
         <div className="pt-4">
-          <Dugme 
-            naslov={loading ? "Kreiranje..." : "Kreiraj nalog"} 
-            boja="plava" 
-            onemoguceno={loading} 
+          <Dugme
+            naslov={loading ? "Kreiranje..." : "Kreiraj nalog"}
+            boja="plava"
+            onemoguceno={loading}
           />
         </div>
       </form>

@@ -8,10 +8,6 @@ const korisniciRoutes = require("./routes/korisniciRoutes");
 const auth = require("./middleware/authMiddleware");
 const istrazi = require("./eksterni/istrazi");
 const citati = require("./eksterni/citati");
-
-const helmet = require("helmet");
-const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./swagger.json");
 const { dovuciDetalje } = require("./eksterni/detaljiOKnjizi");
 
 const nodemailer = require("nodemailer");
@@ -38,7 +34,7 @@ app.use("/api/publikacije", publikacijaRoutes);
 const db = require("./models");
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   optionsSuccessStatus: 200,
 };
@@ -307,7 +303,7 @@ app.get("/zaduzenja/istorija/:studentId", async (req, res) => {
   }
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server radi na portu ${PORT}`);
   startCron();
