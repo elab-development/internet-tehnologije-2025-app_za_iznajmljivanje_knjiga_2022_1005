@@ -227,10 +227,7 @@ export default function KatalogPage() {
                   <Dugme naslov="Zaduži" boja="plava" onemoguceno={p.stanje <= 0} klik={() => otvoriModal(p.id)} />
                 )}
                 {isAdmin && (
-                  <>
-                    <Dugme naslov="Izmeni" boja="siva" klik={() => router.push(`/izmeni-publikaciju/${p.id}`)} />
-                    <Dugme naslov="Obriši" boja="crvena" klik={() => obrisiPublikaciju(p.id)} />
-                  </>
+                  <Dugme naslov="Obriši" boja="crvena" klik={() => obrisiPublikaciju(p.id)} />
                 )}
               </div>
             </div>
