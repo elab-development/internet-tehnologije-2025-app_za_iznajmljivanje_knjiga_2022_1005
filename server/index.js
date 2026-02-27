@@ -110,7 +110,7 @@ app.get("/api/me", auth, async (req, res) => {
 });
 
 
-app.get("/api/moje-knjige", auth, async (req, res) => {
+app.get("/api/zaduzenja/student/:studentId", auth, async (req, res) => {
   try {
     const zaduzenja = await db.Zaduzenje.findAll({
       where: { studentId: req.user.id },
@@ -130,7 +130,7 @@ app.get("/api/moje-knjige", auth, async (req, res) => {
 app.post('/api/proveri-knjigu', async (req, res) => {
   try {
     const { naziv } = req.body;
-    // Direktno zovemo Google, ne treba nam poseban fajl
+ 
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(naziv)}&maxResults=1`);
     
     const knjiga = response.data.items?.[0]?.volumeInfo;
@@ -310,7 +310,7 @@ app.get("/api/debug-rok", async (req, res) => {
     res.status(500).json({ message: "Greška!", error: err.message });
   }
 });
-app.get("/zaduzenja/istorija/:studentId", async (req, res) => {
+app.get("/api/zaduzenja/istorija/:studentId", async (req, res) => {
   try {
     const istorija = await Zaduzenje.findAll({
       where: {
