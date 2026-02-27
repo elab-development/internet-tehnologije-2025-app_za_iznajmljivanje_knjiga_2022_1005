@@ -16,7 +16,7 @@ export const Dugme = ({
   return (
     <button
       type={tip}
-      onClick={klik}
+      {...(klik && { onClick: klik })}
       disabled={onemoguceno}
       className={`${onemoguceno ? stilovi.siva : stilovi[boja]} text-white px-4 py-2 rounded shadow-md transition-all font-semibold`}
     >

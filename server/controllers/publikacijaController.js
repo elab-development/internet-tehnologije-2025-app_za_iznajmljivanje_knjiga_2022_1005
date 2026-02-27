@@ -31,3 +31,18 @@ exports.create = async (req, res) => {
 exports.proveriKnjigu = async (req, res) => {
     res.json({ message: "Ruta radi, ali smo isključili eksterni API privremeno." });
 };
+
+
+exports.delete = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const publikacija = await Publikacija.findByPk(id);
+        if (!publikacija) {
+            return res.status(404).json({ message: "Publikacija nije pronađena" });
+        }
+        await publikacija.destroy();
+        res.json({ message: "Obrisano" });
+    } catch (e) {
+        res.status(500).json({ message: "Greška pri brisanju" });
+    }
+};

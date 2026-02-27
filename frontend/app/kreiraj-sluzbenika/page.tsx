@@ -69,6 +69,7 @@ export default function KreirajSluzbenika() {
           <Dugme 
             naslov={loading ? "Kreiranje..." : "Kreiraj nalog"} 
             boja="plava" 
+            tip="submit"
             onemoguceno={loading} 
           />
         </div>
