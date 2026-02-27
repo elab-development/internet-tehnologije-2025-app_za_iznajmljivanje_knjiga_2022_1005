@@ -260,7 +260,7 @@ export default function ProfilPage() {
           </div>
 
           <div className="grid gap-4">
-            {/* Mapiramo filtriranaZaduzenja umesto svaZaduzenja */}
+           
             {filtriranaZaduzenja.map((z) => (
               <div
                 key={z.id}

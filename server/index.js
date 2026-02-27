@@ -111,19 +111,25 @@ app.get("/api/zaduzenja/student/:studentId", async (req, res) => {
   } catch (error) { 
     res.status(500).json([]); // Vraćamo prazan niz da .filter() na frontendu ne pukne
   }
-});
-app.get("/api/zaduzenja/istorija/:studentId", async (req, res) => {
+});app.get("/api/zaduzenja/istorija/:studentId", async (req, res) => {
   try {
     const istorija = await db.Zaduzenje.findAll({
       where: {
         studentId: req.params.studentId,
-        status: "Vraćeno",
+        status: "Vraćeno", // Mora biti isto kao u ruti za razduživanje
       },
-      include: [{ model: db.Publikacija, as: "publikacija", attributes: ["naziv", "autor"] }],
+      include: [
+        { 
+          model: db.Publikacija, 
+          as: "publikacija", // Mora biti malo 'p' kao u modelu koji si mi poslala
+          attributes: ["naziv", "autor"] 
+        }
+      ],
     });
     res.json(istorija);
   } catch (err) {
-    res.status(500).json([]); // Vraćamo prazan niz u slučaju greške
+    console.error("Greška u istoriji:", err);
+    res.status(500).json([]); // Vratite prazan niz da frontend ne pukne
   }
 });
 // --- ZADUŽI KNJIGU ---
