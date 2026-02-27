@@ -3,8 +3,16 @@
     "username": "root",
     "password": "itehhh",
     "database": "citaonica",
-    "host": "db",
+    "host": "127.0.0.1",
     "dialect": "mysql"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "mysql",
+    "dialectOptions": {
+      "ssl": {
+        "rejectUnauthorized": false
+      }
+    }
   }
-  
 }
