@@ -2,13 +2,7 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
-app.use(cors({
-  origin: [
-    'https://internet-tehnologije-2025-appzaiznajmljivanje-production-e347.up.railway.app',
-    'http://localhost:3000' 
-  ],
-  credentials: true
-}));
+
 const { startCron } = require("./eksterni/email");
 const { proveriISaljiPodsetnike } = require("./eksterni/email");
 const publikacijaRoutes = require("./routes/publikacijaRoutes");
@@ -39,7 +33,13 @@ const lokalniKes = {};
 
 app.use(express.json());
 app.use(helmet({ contentSecurityPolicy: false }));
-
+app.use(cors({
+  origin: [
+    'https://internet-tehnologije-2025-appzaiznajmljivanje-production-e347.up.railway.app',
+    'http://localhost:3000' 
+  ],
+  credentials: true
+}));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/api/login", require("./routes/loginRoutes"));
