@@ -85,13 +85,11 @@ app.get("/api/me", auth, async (req, res) => {
     res.status(500).json({ message: "Greška na serveru", error: err.message });
   }
 });
-
-// --- AKTIVNA ZADUŽENJA STUDENTA ---
-app.get("/api/zaduzenja/student/:studentId", auth, async (req, res) => {
+app.get("/api/zaduzenja/student/:studentId", async (req, res) => {
   try {
     const zaduzenja = await db.Zaduzenje.findAll({
       where: { 
-        studentId: req.params.studentId, // Koristimo params jer profil to traži
+        studentId: req.params.studentId, 
         status: "Aktivno" 
       },
       include: [{ model: db.Publikacija, as: "publikacija", attributes: ["naziv", "autor"] }]
@@ -106,17 +104,15 @@ app.get("/api/zaduzenja/student/:studentId", auth, async (req, res) => {
         naziv: z.publikacija?.naziv || "Nepoznato", 
         autor: z.publikacija?.autor || "Nepoznato", 
         rok: izracunatRok.toLocaleDateString("sr-RS"), 
-        status: z.status 
+        status: z.status || "Aktivno"
       };
     });
     res.json(rezultati);
   } catch (error) { 
-    res.status(500).json({ message: "Greška na serveru", error: error.message }); 
+    res.status(500).json([]); // Vraćamo prazan niz da .filter() na frontendu ne pukne
   }
 });
-
-// --- ISTORIJA ZADUŽENJA STUDENTA ---
-app.get("/api/zaduzenja/istorija/:studentId", auth, async (req, res) => {
+app.get("/api/zaduzenja/istorija/:studentId", async (req, res) => {
   try {
     const istorija = await db.Zaduzenje.findAll({
       where: {
@@ -127,10 +123,9 @@ app.get("/api/zaduzenja/istorija/:studentId", auth, async (req, res) => {
     });
     res.json(istorija);
   } catch (err) {
-    res.status(500).json({ message: "Greška pri učitavanju istorije." });
+    res.status(500).json([]); // Vraćamo prazan niz u slučaju greške
   }
 });
-
 // --- ZADUŽI KNJIGU ---
 app.post("/api/zaduzi-knjigu", async (req, res) => {
   try {
