@@ -10,13 +10,84 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+
+
+if (process.env.MYSQL_URL) {
+  console.log("Povezivanje putem MYSQL_URL...");
+  sequelize = new Sequelize(process.env.MYSQL_URL, {
+    dialect: 'mysql',
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  });
+} 
+
+else if (process.env.MYSQLHOST) {
+  console.log("Povezivanje putem pojedinačnih MYSQL varijabli...");
+  sequelize = new Sequelize(
+    process.env.MYSQLDATABASE,
+    process.env.MYSQLUSER,
+    process.env.MYSQLPASSWORD,
+    {
+      host: process.env.MYSQLHOST,
+      port: process.env.MYSQLPORT || 3306,
+      dialect: 'mysql',
+      logging: false,
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
+        }
+      }
+    }
+  );
 }
 
-// Ova petlja automatski učitava sve fajlove iz models foldera
+else if (process.env.DATABASE_URL) {
+  console.log("Povezivanje putem DATABASE_URL...");
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'mysql',
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  });
+}
+else if (process.env.DB_HOST) {
+  console.log("Povezivanje putem DB_* varijabli...");
+  sequelize = new Sequelize(
+    process.env.DB_NAME || config.database,
+    process.env.DB_USER || config.username,
+    process.env.DB_PASS || config.password,
+    {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT || 3306,
+      dialect: 'mysql',
+      logging: false,
+    }
+  );
+}
+else {
+  console.log(`Povezivanje na LOKALNU bazu (${env} režim)...`);
+  sequelize = new Sequelize(
+    config.database, 
+    config.username, 
+    config.password, 
+    {
+      ...config,
+      logging: false
+    }
+  );
+}
+
+
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -32,15 +103,12 @@ fs
     db[model.name] = model;
   });
 
-// Ova petlja aktivira "static associate" funkcije koje si mi poslala u kodu
+
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
-
-// OVDE NE SME BITI NIŠTA VIŠE (nikakvi db.Zaduzenje.belongsTo...)
-// jer bi to napravilo dupli alias i izazvalo AssociationError.
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

@@ -4,13 +4,15 @@
     "password": "itehhh",
     "database": "citaonica",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "port": 3306
   },
   "production": {
-    "use_env_variable": "DATABASE_URL",
+    "use_env_variable": "MYSQL_URL",
     "dialect": "mysql",
     "dialectOptions": {
       "ssl": {
+        "require": true,
         "rejectUnauthorized": false
       }
     }
