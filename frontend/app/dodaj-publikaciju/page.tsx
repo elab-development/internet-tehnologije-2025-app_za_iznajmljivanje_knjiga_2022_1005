@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "../../lib/api";
 
 export default function DodajPublikaciju() {
   const [naziv, setNaziv] = useState("");
@@ -23,7 +24,7 @@ export default function DodajPublikaciju() {
 
     setUcitava(true);
     try {
-      const res = await fetch(`https://overflowing-spirit-production-fde5.up.railway.app/api/proveri-knjigu`, {
+      const res = await fetch(`${API_BASE_URL}/api/proveri-knjigu`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ naziv, autor }),
@@ -48,7 +49,7 @@ export default function DodajPublikaciju() {
 const spasiUPublikacije = async (e: React.FormEvent) => {
   e.preventDefault();
   
-  const res = await fetch(`http://localhost:5000/api/publikacije`, {
+  const res = await fetch(`${API_BASE_URL}/api/publikacije`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

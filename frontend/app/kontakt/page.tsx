@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react-google-maps";
 import { Dugme } from "../../components/Dugme";
+import { API_BASE_URL } from "../../lib/api";
 
 const lokacije = [
   { 
@@ -51,7 +52,7 @@ export default function KontaktPage() {
 
   const posaljiMejl = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/kontakt", {
+    const res = await fetch(`${API_BASE_URL}/api/kontakt`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(forma),

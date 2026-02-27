@@ -4,6 +4,7 @@ import { useState, useEffect,useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Dugme } from "../components/Dugme";
 import { Polje } from "../components/Polje";
+import { API_BASE_URL } from "../lib/api";
 
 interface Citat {
   tekst: string;
@@ -31,7 +32,7 @@ const CitatDana = () => {
         }
 
         // 2. Ako nemamo u memoriji, tek onda vuci sa servera
-        const res = await fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/citati");
+        const res = await fetch(`${API_BASE_URL}/api/citati`);
         const data = await res.json();
         
         if (Array.isArray(data) && data.length > 0 && data[0].tekst) {
@@ -122,7 +123,7 @@ export default function KatalogPage() {
   }, []);
 
   const osveziPodatke = () => {
-    fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/publikacije")
+    fetch(`${API_BASE_URL}/api/publikacije`)
       .then((res) => res.json())
       .then((data) => {
         setPublikacije(Array.isArray(data) ? data : []);
@@ -136,7 +137,7 @@ export default function KatalogPage() {
 
   const obrisiPublikaciju = async (id: number) => {
     if (!confirm("Obrisati?")) return;
-    const res = await fetch(`https://overflowing-spirit-production-fde5.up.railway.app/api/publikacije/${id}`, { method: "DELETE" });
+    const res = await fetch(`${API_BASE_URL}/api/publikacije/${id}`, { method: "DELETE" });
     if (res.ok) setPublikacije((prev) => prev.filter((p) => p.id !== id));
   };
 
@@ -152,7 +153,7 @@ export default function KatalogPage() {
     setMrdni(true);
     setTimeout(() => setMrdni(false), 200);
 
-    fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/zaduzi-knjigu", {
+    fetch(`${API_BASE_URL}/api/zaduzi-knjigu`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

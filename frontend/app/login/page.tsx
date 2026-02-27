@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Polje } from "../../components/Polje";
 import { Dugme } from "../../components/Dugme";
 import { PoljeZaSifru } from "../../components/PoljeZaSifru";
+import { API_BASE_URL } from "../../lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function LoginPage() {
     setGreska("");
     setUcitava(true);
     try {
-      const res = await fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/login", {
+      const res = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

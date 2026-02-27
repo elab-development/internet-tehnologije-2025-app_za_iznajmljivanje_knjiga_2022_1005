@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ZaduzenjeKartica } from "../../components/ZaduzenjeKartica";
 import { Dugme } from "../../components/Dugme";
+import { API_BASE_URL } from "../../lib/api";
 
 export default function ProfilPage() {
   const [korisnik, setKorisnik] = useState<any>(null);
@@ -16,7 +17,6 @@ export default function ProfilPage() {
   const [wikiLoading, setWikiLoading] = useState(false);
   const [pretragaIndeksa, setPretragaIndeksa] = useState("");
 
-  const API_BASE = "https://overflowing-spirit-production-fde5.up.railway.app/api";
   const isAdmin = Number(korisnik?.isAdmin) === 1;
   const jeSluzbenik = korisnik?.uloga === "sluzbenik" && !isAdmin;
 
@@ -26,8 +26,8 @@ export default function ProfilPage() {
     const headers = { Authorization: `Bearer ${token}` };
     try {
       const [resS, resSl] = await Promise.all([
-        fetch(`${API_BASE}/admin/studenti`, { headers }),
-        fetch(`${API_BASE}/admin/sluzbenici`, { headers }),
+        fetch(`${API_BASE_URL}/api/admin/studenti`, { headers }),
+        fetch(`${API_BASE_URL}/api/admin/sluzbenici`, { headers }),
       ]);
       setStudenti(resS.ok ? await resS.json() : []);
       setSluzbenici(resSl.ok ? await resSl.json() : []);
@@ -38,7 +38,7 @@ export default function ProfilPage() {
 
   const ucitajZaduzenjaSluzbenik = async () => {
     try {
-      const res = await fetch(`${API_BASE}/zaduzenja/aktivna`, {
+      const res = await fetch(`${API_BASE_URL}/api/zaduzenja/aktivna`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (res.ok) {
@@ -52,7 +52,7 @@ export default function ProfilPage() {
 
   const handleRazduzi = async (id: number) => {
     if (!confirm("Potvrdi vraćanje?")) return;
-    const res = await fetch(`${API_BASE}/razduzi/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/razduzi/${id}`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
@@ -61,7 +61,7 @@ export default function ProfilPage() {
 
   const deaktiviraj = async (tip: string, id: number) => {
     if (!confirm(`Da li ste sigurni?`)) return;
-    const res = await fetch(`${API_BASE}/admin/brisi/${tip}/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/admin/brisi/${tip}/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
@@ -72,7 +72,7 @@ export default function ProfilPage() {
     if (!wikiPojam) return;
     setWikiLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/eksterni/istrazi/${wikiPojam}`);
+      const res = await fetch(`${API_BASE_URL}/api/eksterni/istrazi/${wikiPojam}`);
       if (res.ok) setWikiData(await res.json());
     } catch (err) {
       console.error(err);
@@ -89,8 +89,8 @@ export default function ProfilPage() {
     const ucitajSveZaStudenta = async (id: number) => {
       try {
         const [resAktivna, resIstorija] = await Promise.all([
-          fetch(`${API_BASE}/zaduzenja/student/${id}`),
-          fetch(`${API_BASE}/zaduzenja/istorija/${id}`)
+          fetch(`${API_BASE_URL}/api/zaduzenja/student/${id}`),
+          fetch(`${API_BASE_URL}/api/zaduzenja/istorija/${id}`)
         ]);
         const aktivna = resAktivna.ok ? await resAktivna.json() : [];
         const istorija = resIstorija.ok ? await resIstorija.json() : [];
@@ -105,7 +105,7 @@ export default function ProfilPage() {
     };
 
     const token = localStorage.getItem("token");
-    fetch(`${API_BASE}/me`, {
+    fetch(`${API_BASE_URL}/api/me`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
       .then((res) => (res.ok ? res.json() : null))

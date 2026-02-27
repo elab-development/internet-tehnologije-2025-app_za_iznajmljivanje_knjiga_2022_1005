@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Polje } from "../../components/Polje";
 import { PoljeZaSifru } from "../../components/PoljeZaSifru";
 import { Dugme } from "../../components/Dugme";
+import { API_BASE_URL } from "../../lib/api";
 
 export default function KreirajSluzbenika() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function KreirajSluzbenika() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/admin/kreiraj-sluzbenika", {
+      const res = await fetch(`${API_BASE_URL}/api/admin/kreiraj-sluzbenika`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

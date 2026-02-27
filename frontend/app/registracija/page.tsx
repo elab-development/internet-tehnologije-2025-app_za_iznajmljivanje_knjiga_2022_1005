@@ -5,6 +5,7 @@ import { Polje } from "../../components/Polje";
 import { PoljeZaSifru } from "../../components/PoljeZaSifru";
 
 import { Dugme } from "../../components/Dugme";
+import { API_BASE_URL } from "../../lib/api";
 
 export default function RegistracijaStranica() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function RegistracijaStranica() {
     setUcitava(true);
 
     try {
-      const res = await fetch("https://overflowing-spirit-production-fde5.up.railway.app/api/registracija", {
+      const res = await fetch(`${API_BASE_URL}/api/registracija`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ime, prezime, brojIndeksa, email, password }),

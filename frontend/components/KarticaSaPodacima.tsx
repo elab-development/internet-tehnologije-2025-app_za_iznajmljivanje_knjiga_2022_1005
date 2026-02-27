@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react"; 
 import { Dugme } from "./Dugme";
+import { API_BASE_URL } from "../lib/api";
 
 export function KarticaSaPodacima({ p, isAdmin, jeSluzbenik, obrisiPublikaciju, handleZaduzivanje, router }: any) {
   const [eksterno, setEksterno] = useState<any>(null);
@@ -9,7 +10,7 @@ export function KarticaSaPodacima({ p, isAdmin, jeSluzbenik, obrisiPublikaciju, 
     // Ako već imamo sliku iz baze (p.slika_url), ne moramo zvati eksterni API
     if (p.slika_url || !p.naziv || eksterno) return;
 
-    fetch(`http://localhost:5000/api/eksterni-detalji?naslov=${encodeURIComponent(p.naziv)}`)
+    fetch(`${API_BASE_URL}/api/eksterni-detalji?naslov=${encodeURIComponent(p.naziv)}`)
       .then((res) => res.json())
       .then((data) => setEksterno(data))
       .catch(() => setEksterno({ slika: null }));
