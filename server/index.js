@@ -2,6 +2,13 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
+app.use(cors({
+  origin: [
+    'https://internet-tehnologije-2025-appzaiznajmljivanje-production-e347.up.railway.app',
+    'http://localhost:3000' 
+  ],
+  credentials: true
+}));
 const { startCron } = require("./eksterni/email");
 const { proveriISaljiPodsetnike } = require("./eksterni/email");
 const publikacijaRoutes = require("./routes/publikacijaRoutes");
@@ -29,11 +36,7 @@ const transporter = nodemailer.createTransport({
 const app = express();
 const lokalniKes = {};
 
-app.use(cors({
-  origin: '*', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+
 app.use(express.json());
 app.use(helmet({ contentSecurityPolicy: false }));
 

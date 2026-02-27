@@ -8,6 +8,7 @@ module.exports = {
         isbn: '123-456',
         autor: 'Brendan Eich',
         stanje: 5,
+        slika_url: 'https://upload.wikimedia.org/wikipedia/en/6/6a/JavaScript-logo.png'  
      
         
       },
@@ -16,6 +17,7 @@ module.exports = {
         isbn: '789-101',
         autor: 'Ivo Andrić',
         stanje: 2,
+         slika_url: 'https://upload.wikimedia.org/wikipedia/en/6/6a/JavaScript-logo.png'  
        
        
       }
