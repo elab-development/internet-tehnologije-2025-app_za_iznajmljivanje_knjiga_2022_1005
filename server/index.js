@@ -148,8 +148,7 @@ app.post('/api/proveri-knjigu', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Greška pri pretrazi" });
   }
-});
-app.post("/api/zaduzi-knjigu", async (req, res) => {
+});app.post("/api/zaduzi-knjigu", async (req, res) => {
   try {
     const { publikacijaId, brojIndeksa } = req.body;
 
@@ -175,11 +174,25 @@ app.post("/api/zaduzi-knjigu", async (req, res) => {
         message: `Zaduživanje nije moguće. Student ${student.ime} već ima 6 aktivna zaduženja!`,
       });
     }
+
     const knjiga = await db.Publikacija.findByPk(publikacijaId);
-    if (!knjiga || knjiga.stanje <= 0) return res.status(400).json({ message: "Knjiga trenutno nije na stanju." });
-    await db.Zaduzenje.create({ studentId: student.id, publikacijaId, datumZaduzenja: new Date(), status: "Aktivno" });
+    if (!knjiga || knjiga.stanje <= 0) {
+      return res.status(400).json({ message: "Knjiga trenutno nije na stanju." });
+    }
+
+    const rok = new Date();
+    rok.setDate(rok.getDate() + 14);
+
+    await db.Zaduzenje.create({ 
+      studentId: student.id, 
+      publikacijaId, 
+      datumZaduzenja: new Date(), 
+      status: "Aktivno" 
+    });
+    
     await knjiga.decrement("stanje", { by: 1 });
 
+   
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: student.email,
@@ -188,11 +201,15 @@ app.post("/api/zaduzi-knjigu", async (req, res) => {
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
-      if (error) console.log("Greška pri slanju mejla:", error);
-      else console.log("Email poslat studentu: " + info.response);
+      if (error) {
+        console.error("Greška pri slanju mejla:", error);
+      } else {
+        console.log("Email poslat studentu: " + info.response);
+      }
     });
 
     res.json({ message: `Uspešno zaduženo studentu ${student.ime}!` });
+
   } catch (error) {
     console.error("GREŠKA :", error);
     res
